@@ -65,3 +65,10 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 # filament-app
+
+
+# filament command :
+
+php artisan make:filament-resource Price --generate --view --model
+
+need to create model first like this is going to create the generated resource based on the model

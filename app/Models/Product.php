@@ -25,6 +25,9 @@ class Product extends Model
         return $this->name;
     }
 
+    #protected fillable fields
+    protected $fillable = ['name', 'description', 'image'];
+
     
 
 }
