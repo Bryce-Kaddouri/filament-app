@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Price;
 use App\Models\Product;
 use App\Models\Provider;
+use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -14,82 +15,39 @@ use Illuminate\Contracts\Database\Eloquent\Builder;
 use Livewire\Component;
 use Illuminate\Contracts\View\View;
 use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
+use Filament\Forms\Components\Actions\Button;
+use Filament\Widgets\Widget;
 
-
-class ProductChartFilter extends Component implements HasForms
+class ProductChartFilter extends Widget implements HasForms
 {
     use InteractsWithForms;
 
     public ?array $data = [];
 
+    public ?array $filterData = [];
+
     public function mount(): void
     {
-
-        $this->form->fill();
+        //dd($this->filterData);
+        if($this->filterData){
+         $this->form->fill(
+             [
+                'product' => $this->filterData['product'],
+                'providers' => $this->filterData['providers'],
+                'effective_date_range' => "01/01/2024 - 31/12/2024",
+            ] 
+         );
+        }else{
+            $this->form->fill();
+        }
     }
 
     
 
     public function form(Form $form): Form
-    {
-
-   
-        
-        
-
-        
-        if(isset($this->data['providers']) && count($this->data['providers']) > 0){
-            // dd($this->data);
-        }
-       
-         
+    {     
         return $form
-            ->schema([
-                /* Forms\Components\Select::make('product')
-                    ->required()
-                    ->native(false)
-                    ->searchable()
-                    ->preload()
-                    ->reactive()
-                    
-                    ->afterStateUpdated(function (callable $set, $state) {
-                        // Reset the product field when provider changes
-                        // $set('providers', null);
-                        
-                       
-                        $set('providers', null);
-                    })
-                    ->options(Product::all()->pluck('name', 'id')), */
-                /* Forms\Components\Select::make('providers')
-                    ->required()
-                    ->native(false)
-                    ->searchable()
-                    ->multiple()
-                    ->preload()
-                    ->reactive()
-                   
-                   
-                    ->options(function () {
-                        if (!$this->data['product']) {
-                            return [];
-                        }
-
-
-                        $query = Provider::whereHas('products', function ($query) {
-                            $query
-                            ->where('product_id', $this->data['product']);
-                            
-                        });
-
-                       
-
-                        // Exclude currently selected providers
-                        
-                        return $query->pluck('name', 'id');
-                    })
-                    ->disabled(fn ($get) => !$get('product')), */ // Disable if product not selected
-
-                    
+            ->schema([    
                     Forms\Components\Select::make('product')
                 ->native(false)
                 ->searchable()
@@ -128,8 +86,10 @@ class ProductChartFilter extends Component implements HasForms
                     ->label('Effective Date Range')
                     ->defaultThisYear()
                     ->required(),
+                    
                 
             ])
+            
             ->statePath('data')
             ->model(Price::class);
     }
@@ -137,11 +97,10 @@ class ProductChartFilter extends Component implements HasForms
     public function filter(): void
     {
         $data = $this->form->getState();
-        dd($data);
-
-        /* $record = Price::create($data);
-
-        $this->form->model($record)->saveRelationships(); */
+        //dd($data);
+        // redirect to the product statistics page with the filter data
+        redirect()->route('filament.admin.pages.product-statistics', ['filterData' => $data]);
+        
     }
 
     public function render(): View

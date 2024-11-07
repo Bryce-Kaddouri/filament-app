@@ -5,31 +5,54 @@ use Filament\Support\RawJs;
 
 use App\Models\Price;
 use App\Models\Provider;
+use Carbon\Carbon;
+use Filament\Forms\Components\Select;
 use Filament\Widgets\ChartWidget;
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
 use Illuminate\Container\Attributes\DB;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB as FacadesDB;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Form;
+use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
 
-class ProductLineChart extends ChartWidget
+class ProductLineChart extends ChartWidget implements HasForms
 {
+    use InteractsWithForms;
+
     protected static ?string $heading = 'Chart';
     public $stats = [];
+
+
+    public ?array $filterData = [];
 
 
 
 
     protected function getData(): array
     {
-
+        $product = null;
+        $providers = null;
+        $effective_date_from = null;
+        $effective_date_to = null;
+        if($this->filterData){
+            $product = $this->filterData['product'];
+            $providers = $this->filterData['providers'];
+            $effective_date_from = Carbon::createFromFormat('d/m/Y', explode(' - ', $this->filterData['effective_date_range'])[0]);
+            $effective_date_to = Carbon::createFromFormat('d/m/Y', explode(' - ', $this->filterData['effective_date_range'])[1]);
+            //dd($effective_date_from, $effective_date_to);
+        }
+        
+        // dd($filterData, "test");
         $activeFilter = $this->filter;
+
 
         $providers = Provider::with('prices')->get();
         $chartData = [
             
         ];
-
         foreach ($providers as $provider) {
             if($activeFilter == 'week'){
                 $trend = Trend::query(
@@ -45,7 +68,7 @@ class ProductLineChart extends ChartWidget
                     )
                     ->perWeek()
                     ->average('price');
-            }
+            }else
             if($activeFilter == 'year'){
                 $trend = Trend::query(
                     Price::query()
@@ -61,6 +84,7 @@ class ProductLineChart extends ChartWidget
                     ->perYear()
                     ->average('price');
             }else{
+                
             $trend = Trend::query(
             Price::query()
                 ->where('provider_id', $provider->id)
@@ -69,8 +93,8 @@ class ProductLineChart extends ChartWidget
             ->interval($activeFilter)
             ->dateColumn('effective_date')
             ->between(
-                start: now()->startOfYear(),
-                end: now()->endOfYear(),
+                start: $effective_date_from ?? now()->startOfYear(),
+                end: $effective_date_to ?? now()->endOfYear(),
             )
             ->perMonth()
             ->average('price');
