@@ -63,6 +63,11 @@ class ProviderResource extends Resource
             Forms\Components\Hidden::make('red'),
             Forms\Components\Hidden::make('green'),
             Forms\Components\Hidden::make('blue'),
+            Forms\Components\Select::make('products')
+                ->relationship('products', 'name')
+                ->multiple()
+                ->preload()
+                ->disabled(true),
         ]);
 }
 
@@ -98,6 +103,12 @@ class ProviderResource extends Resource
                         $green = $record->green ?? 0;
                         $blue = $record->blue ?? 0;
                         return sprintf('#%02x%02x%02x', $red, $green, $blue);
+                    }),
+                    Tables\Columns\TextColumn::make('products.name')
+                    ->label('Products')
+                    ->badge()
+                    ->getStateUsing(function ($record) {
+                        return count($record->products->pluck('name')->toArray());
                     }),
             ])
             ->filters([

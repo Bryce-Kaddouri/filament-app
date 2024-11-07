@@ -35,4 +35,14 @@ class Provider extends Model
         return '#' . dechex($this->red) . dechex($this->green) . dechex($this->blue);
     }
 
+    public function __toString()
+    {
+        return $this->name;
+    }
+
+    # function to return all the providers name with this format ["provider1", "provider2", "provider3"]
+    
+
+
+
 }
