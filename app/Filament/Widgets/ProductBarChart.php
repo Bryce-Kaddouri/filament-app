@@ -19,7 +19,7 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
 
-class ProductLineChart extends ChartWidget implements HasForms
+class ProductBarChart extends ChartWidget implements HasForms
 {
     use InteractsWithForms;
 
@@ -109,16 +109,11 @@ class ProductLineChart extends ChartWidget implements HasForms
             $chartData[] = [
                 'label' => $provider->name,
                 'data' => $trend->map(fn (TrendValue $value) => $value->aggregate),
-                'backgroundColor' => 'rgba(' . $provider->red . ', ' . $provider->green . ', ' . $provider->blue . ', 0.2)',
+                'backgroundColor' => 'rgba(' . $provider->red . ', ' . $provider->green . ', ' . $provider->blue . ', 1)',
                 'borderColor' => 'rgba(' . $provider->red . ', ' . $provider->green . ', ' . $provider->blue . ', 1)',
-                'borderWidth' => 2, // Increased border width for better visibility
-                'tension' => 0, // Added tension for smoother curves
+                'borderWidth' => 1, // Increased border width for better visibility
                 'fill' => true,
-                'stepped' => false, // Changed to false for a smoother line
-                'stack' => 'stacked', // Added stacking for the dataset
-                'spanGaps' => true,
-                'skipNull' => true,
-                'pointBackgroundColor' => 'rgba(' . $provider->red . ', ' . $provider->green . ', ' . $provider->blue . ', 0.2)',
+                'skipNull' => false,
             ];
         }
 
@@ -184,7 +179,7 @@ class ProductLineChart extends ChartWidget implements HasForms
 
     protected function getType(): string
     {
-        return 'line';
+        return 'bar';
     }
 
     public ?string $filter = 'month';

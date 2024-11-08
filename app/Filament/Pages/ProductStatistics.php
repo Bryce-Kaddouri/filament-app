@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Widgets\ProductBarChart;
 use App\Filament\Widgets\ProductLineChart;
 use App\Filament\Widgets\ProductYearSelector;
 use App\Livewire\ProductChartFilter;
@@ -52,6 +53,11 @@ class ProductStatistics extends Page
         if($this->filterData){
         return [
             ProductLineChart::make(
+                [
+                    'filterData' => $this->filterData,
+                ]
+            ),
+            ProductBarChart::make(
                 [
                     'filterData' => $this->filterData,
                 ]
