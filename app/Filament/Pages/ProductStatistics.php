@@ -14,7 +14,7 @@ use Livewire\Component;
 class ProductStatistics extends Page
 {
     public $filterData = [];
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static ?string $navigationIcon = 'lucide-bar-chart-3';
 
     protected static string $view = 'filament.pages.product-statistics';
 

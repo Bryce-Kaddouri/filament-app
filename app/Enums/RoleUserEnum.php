@@ -4,9 +4,9 @@ namespace App\Enums;
 
 use App\Enums\Traits\BaseEnum;
 
-enum RoleUserEnum
+enum RoleUserEnum: string
 {
     use BaseEnum;
-    case ROLE_USER ;
-    case ROLE_ADMIN;
+    case ROLE_USER = 'ROLE_USER';
+    case ROLE_ADMIN = 'ROLE_ADMIN';
 }

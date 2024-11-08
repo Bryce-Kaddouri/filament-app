@@ -110,10 +110,10 @@ class ProductBarChart extends ChartWidget implements HasForms
                 'label' => $provider->name,
                 'data' => $trend->map(fn (TrendValue $value) => $value->aggregate),
                 'backgroundColor' => 'rgba(' . $provider->red . ', ' . $provider->green . ', ' . $provider->blue . ', 1)',
-                'borderColor' => 'rgba(' . $provider->red . ', ' . $provider->green . ', ' . $provider->blue . ', 1)',
-                'borderWidth' => 1, // Increased border width for better visibility
+                # 'borderColor' => 'rgba(' . $provider->red . ', ' . $provider->green . ', ' . $provider->blue . ', 1)',
+                'borderWidth' => 0, // Increased border width for better visibility
                 'fill' => true,
-                'skipNull' => false,
+                'skipNull' => true,
             ];
         }
 

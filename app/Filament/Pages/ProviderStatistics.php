@@ -8,7 +8,7 @@ use Filament\Pages\Page;
 
 class ProviderStatistics extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static ?string $navigationIcon = 'lucide-line-chart';
 
     protected static string $view = 'filament.pages.provider-statistics';
 
