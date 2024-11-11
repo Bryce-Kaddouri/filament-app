@@ -10,12 +10,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Filament\Models\Contracts\HasAvatar;
 use Illuminate\Support\Facades\Storage;
- 
+use Edwink\FilamentUserActivity\Traits\UserActivityTrait;
+
 
 class User extends Authenticatable  implements HasAvatar
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, UserActivityTrait;
 
     /**
      * The attributes that are mass assignable.

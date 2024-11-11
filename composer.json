@@ -9,6 +9,7 @@
         "blade-ui-kit/blade-heroicons": "^2.4",
         "codeat3/blade-carbon-icons": "^2.30",
         "codeat3/blade-iconpark": "^1.6",
+        "edwink/filament-user-activity": "^1.0",
         "filament/filament": "^3.2",
         "flowframe/laravel-trend": "^0.3.0",
         "joaopaulolndev/filament-edit-profile": "^1.0",

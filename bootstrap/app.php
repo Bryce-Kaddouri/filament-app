@@ -24,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->use([
             \Illuminate\Http\Middleware\TrustProxies::class,
             \Illuminate\Http\Middleware\HandleCors::class,
+            \Edwink\FilamentUserActivity\Http\Middleware\RecordUserActivity::class,
         ]);
         
     })

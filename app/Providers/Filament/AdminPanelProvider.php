@@ -12,6 +12,7 @@ use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages;
 use App\Filament\Pages\Auth\EditProfile;
+use Edwink\FilamentUserActivity\FilamentUserActivityPlugin;
 use Filament\Navigation\MenuItem;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -94,7 +95,9 @@ class AdminPanelProvider extends PanelProvider
                 ->shouldShowDeleteAccountForm(value: true)
                 ->customProfileComponents([
                     \App\Livewire\CustomProfileComponent::class,
-                ])
+                ]),
+                FilamentUserActivityPlugin::make()
+
 
 
                 
