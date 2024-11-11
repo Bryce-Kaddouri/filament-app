@@ -15,6 +15,15 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ProviderResource extends Resource
 {
+    protected static ?int $navigationSort = 2;
+
+    public static function getNavigationSort(): ?int
+    {
+        return 2;
+    }
+
+
+
     protected static ?string $model = Provider::class;
 
     protected static ?string $navigationIcon = 'lucide-user-round-search';

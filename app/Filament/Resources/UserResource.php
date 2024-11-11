@@ -25,6 +25,8 @@ class UserResource extends Resource
 
     protected static ?string $navigationIcon = 'lucide-users';
 
+    protected static ?int $navigationSort = 7;
+
     public static function form(Form $form): Form
     {
         // if create or edit --> false else if show --> true

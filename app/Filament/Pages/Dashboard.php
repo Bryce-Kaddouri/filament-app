@@ -20,4 +20,9 @@ class Dashboard extends Page
             FilamentInfoWidget::class,
         ];
     }
+
+    public static function getNavigationSort(): ?int
+    {
+        return 0;
+    }
 }

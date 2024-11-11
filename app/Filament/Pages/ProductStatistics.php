@@ -18,6 +18,8 @@ class ProductStatistics extends Page
 
     protected static string $view = 'filament.pages.product-statistics';
 
+    protected static ?int $navigationSort = 5;
+
     protected $listeners = ['filterUpdated' => 'updateChartData'];
 
     public function mount(HttpRequest $request): void

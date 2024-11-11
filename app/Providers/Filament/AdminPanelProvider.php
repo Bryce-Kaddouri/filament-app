@@ -90,10 +90,12 @@ class AdminPanelProvider extends PanelProvider
                     rules: 'mimes:jpeg,png|max:1024' //only accept jpeg and png files with a maximum size of 1MB
                 )
                 ->shouldShowBrowserSessionsForm()
+                ->setSort(8)
                 ->shouldShowDeleteAccountForm(value: true)
                 ->customProfileComponents([
                     \App\Livewire\CustomProfileComponent::class,
                 ])
+
 
                 
             ]);
