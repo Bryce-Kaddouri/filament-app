@@ -6,7 +6,10 @@ use App\Enums\RoleUserEnum;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Resources\Resource;
@@ -14,6 +17,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Mail;
 
 class UserResource extends Resource
 {
@@ -23,6 +27,8 @@ class UserResource extends Resource
 
     public static function form(Form $form): Form
     {
+        // if create or edit --> false else if show --> true
+        $isShow = $form->getRecord()?->id ? false : true;
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
@@ -35,24 +41,22 @@ class UserResource extends Resource
                     ->unique(table: User::class, column: 'email'),
                 // Forms\Components\DateTimePicker::make('email_verified_at')->hidden(fn(Get $get): bool => $get('role') !== 'admin'),
                 Forms\Components\TextInput::make('password')
+                    ->visibleOn('create')
                     ->confirmed()
                     ->password()
                     ->required()
                     ->maxLength(255)
                     ->autocomplete('new-password')
                     ->revealable()
-                    ->hidden(function (Get $get) use ($form): bool {
-                        dd($form);
-                        dd($get);
-                        dd($get('action'));
-                        return $get('action') === 'view';
-                    }),
+                    
+                    ,
                 // confirm password
                 Forms\Components\TextInput::make('password_confirmation')
                     ->password()
                     ->required()
                     ->revealable()
-                    ->hidden(fn(Get $get): bool => $get('action') === 'view'),
+                    ->hidden(fn(Get $get): bool => $get('action') === 'view')
+                    ->visibleOn('create'),
                     Forms\Components\Select::make('role')
                     ->native(false)
                     ->options([
@@ -60,7 +64,9 @@ class UserResource extends Resource
                         RoleUserEnum::ROLE_ADMIN->value => 'Admin',
                     ])
                     ->required()
+                   
                     ->enum(RoleUserEnum::class),
+                    
                     
             ]);
     }
