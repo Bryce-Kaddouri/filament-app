@@ -8,8 +8,11 @@ use App\Enums\RoleUserEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Filament\Models\Contracts\HasAvatar;
+use Illuminate\Support\Facades\Storage;
+ 
 
-class User extends Authenticatable
+class User extends Authenticatable  implements HasAvatar
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -24,6 +27,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'avatar_url',
+        'custom_fields',
     ];
 
     /**
@@ -47,6 +52,14 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'role' => RoleUserEnum::class,
+            'custom_fields' => 'array'
         ];
     }
+
+    public function getFilamentAvatarUrl(): ?string
+    {
+        return $this->avatar_url ? Storage::url("$this->avatar_url") : null;
+    }
+
+    
 }

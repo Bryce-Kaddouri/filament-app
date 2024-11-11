@@ -5,12 +5,14 @@ namespace App\Providers\Filament;
 use App\Filament\Pages\Dashboard;
 use App\Filament\Resources\ProviderLineChartRessource\Widgets\ProviderLineChart;
 use App\Filament\Resources\ProviderPriceByMonthRessourceResource\Widgets\TrendProviderPriceByMonth;
+use App\Providers\Filament\AvatarProviders\BoringAvatarsProvider;
 use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages;
 use App\Filament\Pages\Auth\EditProfile;
+use Filament\Navigation\MenuItem;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -22,6 +24,8 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
+use Joaopaulolndev\FilamentEditProfile\Pages\EditProfilePage;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -34,7 +38,7 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->emailVerification()
             ->passwordReset()
-            ->profile(EditProfile::class, isSimple: false)
+            // ->profile(EditProfile::class, isSimple: false)          
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -59,8 +63,38 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
+            ->userMenuItems([
+                'profile' => MenuItem::make()
+                    ->label(function () {
+                        // dd(auth()->user()->name);
+                        return auth()->guard('web')->user()->name;
+                    })
+                    ->url(fn (): string => EditProfilePage::getUrl())
+                    ->icon('heroicon-m-user-circle')
+                    ->visible(true)
+                    //If you are using tenancy need to check with the visible method where ->company() is the relation between the user and tenancy model as you called
+                    ,
+            ])
             ->authMiddleware([
                 Authenticate::class,
+            ])
+            ->plugins([
+                FilamentEditProfilePlugin::make()
+                
+                
+                ->setIcon('heroicon-o-user')
+                ->shouldShowAvatarForm(
+                    value: true,
+                    directory: 'avatars', // image will be stored in 'storage/app/public/avatars
+                    rules: 'mimes:jpeg,png|max:1024' //only accept jpeg and png files with a maximum size of 1MB
+                )
+                ->shouldShowBrowserSessionsForm()
+                ->shouldShowDeleteAccountForm(value: true)
+                ->customProfileComponents([
+                    \App\Livewire\CustomProfileComponent::class,
+                ])
+
+                
             ]);
     }
 }
