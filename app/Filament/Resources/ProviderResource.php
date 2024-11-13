@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ProviderResource\Pages;
 use App\Filament\Resources\ProviderResource\RelationManagers;
 use App\Models\Provider;
+use Cheesegrits\FilamentGoogleMaps\Actions\StaticMapAction;
 use CodeWithDennis\SimpleMap\Components\Forms\SimpleMap as FormsSimpleMap;
 use CodeWithDennis\SimpleMap\SimpleMap;
 use Filament\Forms;
@@ -17,6 +18,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Tapp\FilamentGoogleAutocomplete\Forms\Components\GoogleAutocomplete;
 use Cheesegrits\FilamentGoogleMaps\Fields\Map;
 use Cheesegrits\FilamentGoogleMaps\Columns\MapColumn;
+use Cheesegrits\FilamentGoogleMaps\Filters\RadiusFilter;
 
 use Filament\Forms\Components\Fieldset;
 
@@ -157,16 +159,7 @@ class ProviderResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('phone')
                     ->searchable(),
-                    MapColumn::make('location')
-                    ->extraAttributes([
-                      'class' => 'my-funky-class'
-                    ]) // Optionally set any additional attributes, merged into the wrapper div around the image tag
-                   
-                    ->height(height: '150') // API setting for map height in PX
-                    ->width(width: '150') // API setting got map width in PX
-                    ->type('roadmap') // API setting for map type (hybrid, satellite, roadmap, tarrain)
-                    ->zoom(10) // API setting for zoom (1 through 20)
-                    ->ttl(60 * 60 * 24 * 30), // number of seconds to cache image before refetching from API
+                    
                 
                 Tables\Columns\ImageColumn::make('image'),
                 Tables\Columns\TextColumn::make('created_at')
@@ -193,7 +186,13 @@ class ProviderResource extends Resource
                     }),
             ])
             ->filters([
-                
+                RadiusFilter::make('radius')
+        ->latitude('lat')  // optional lat and lng fields on your table, default to the getLatLngAttributes() method
+        ->longitude('lng') // you should have one your model from the fgm:model-code command when you installed
+        ->selectUnit() // add a Kilometer / Miles select
+        ->kilometers() // use (or default the select to) kilometers (defaults to miles)
+        ->section('Radius Search') // optionally wrap the filter in a section with heading
+
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -202,6 +201,7 @@ class ProviderResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    StaticMapAction::make(),
                 ]),
             ]);
     }
