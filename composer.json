@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "afatmustafa/blade-hugeicons": "^0.0.3",
         "blade-ui-kit/blade-heroicons": "^2.4",
         "cheesegrits/filament-google-maps": "^3.0",
         "codeat3/blade-carbon-icons": "^2.30",
@@ -14,13 +15,16 @@
         "edwink/filament-user-activity": "^1.0",
         "filament/filament": "^3.2",
         "flowframe/laravel-trend": "^0.3.0",
+        "hugomyb/filament-media-action": "^3.1",
         "joaopaulolndev/filament-edit-profile": "^1.0",
+        "joaopaulolndev/filament-pdf-viewer": "^1.0",
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
         "mallardduck/blade-lucide-icons": "^1.23",
         "malzariey/filament-daterangepicker-filter": "^3.1",
         "tapp/filament-google-autocomplete-field": "^1.0",
-        "ysfkaya/filament-phone-input": "^3.1"
+        "ysfkaya/filament-phone-input": "^3.1",
+        "zeeshantariq/filament-attachmate": "^1.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
