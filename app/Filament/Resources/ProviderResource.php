@@ -19,8 +19,13 @@ use Tapp\FilamentGoogleAutocomplete\Forms\Components\GoogleAutocomplete;
 use Cheesegrits\FilamentGoogleMaps\Fields\Map;
 use Cheesegrits\FilamentGoogleMaps\Columns\MapColumn;
 use Cheesegrits\FilamentGoogleMaps\Filters\RadiusFilter;
-
+use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
+use Ysfkaya\FilamentPhoneInput\Tables\PhoneColumn;
+use Ysfkaya\FilamentPhoneInput\Infolists\PhoneEntry;
+use Ysfkaya\FilamentPhoneInput\PhoneInputNumberType;
+use libphonenumber\PhoneNumberType;
 use Filament\Forms\Components\Fieldset;
+use Illuminate\Support\Facades\Http;
 
 class ProviderResource extends Resource
 {
@@ -50,10 +55,20 @@ class ProviderResource extends Resource
                 ->email()
                 ->required()
                 ->maxLength(255),
-            Forms\Components\TextInput::make('phone')
+            /* Forms\Components\TextInput::make('phone')
                 ->tel()
                 ->required()
-                ->maxLength(255),
+                ->maxLength(255), */
+                PhoneInput::make('phone')
+                ->ipLookup(function () {
+                    return rescue(fn () => Http::get('https://ipinfo.io/json')->json('country'), app()->getLocale(), report: false);
+                })
+                ->validateFor(
+                   
+                    type: PhoneNumberType::MOBILE | PhoneNumberType::FIXED_LINE,
+                    lenient: true, // default: false
+                )
+                ->required(),
              // Color Picker
              Forms\Components\ColorPicker::make('color')
              ->required()
@@ -157,8 +172,10 @@ class ProviderResource extends Resource
                 Tables\Columns\TextColumn::make('email')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('phone')
-                    ->searchable(),
+                /* Tables\Columns\TextColumn::make('phone')
+                    ->searchable(), */
+                    PhoneColumn::make('phone')->displayFormat(PhoneInputNumberType::NATIONAL),
+
                     
                 
                 Tables\Columns\ImageColumn::make('image'),

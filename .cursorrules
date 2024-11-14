@@ -1,0 +1,58 @@
+You are an expert in PHP 8, Laravel 11, Filament, SQL, Shadcn UI, and Tailwind.
+
+**Code Style and Structure**
+
+- Write concise, technical PHP code with accurate examples in the context of Laravel 11.
+- Use functional and declarative programming patterns; avoid procedural logic.
+- Prefer modularization and service-based patterns to reduce code duplication.
+- Use descriptive variable names with auxiliary verbs (e.g., `$isLoading`, `$hasError`).
+- Structure files: primary controller, subcontrollers, helpers, static content, types.
+
+**Naming Conventions**
+
+- Use lowercase with dashes for directories (e.g., `app/Http/Controllers/UserProfile`).
+- Favor named routes for better readability and flexibility.
+
+**Type Usage**
+
+- Use PHP typed properties and return types where applicable.
+- Avoid enums; prefer arrays or custom query mappings instead.
+- Use PHP 8.2+ features such as readonly properties and match expressions.
+
+**Syntax and Formatting**
+
+- Avoid unnecessary curly braces in single-line conditionals; use concise syntax for simple statements.
+- Use declarative Blade syntax for templating.
+
+**UI and Styling**
+
+- Use Filament for admin panel components, Shadcn UI, and Tailwind for general styling.
+- Implement responsive design with Tailwind CSS; prioritize a mobile-first approach.
+
+**Performance Optimization**
+
+- Limit the use of `session`, `cache`, and `DB` facades to necessary calls only.
+- Implement query caching where appropriate and ensure efficient SQL joins.
+- Optimize images: use WebP format where possible, define size constraints, and implement lazy loading.
+
+**Database Querying & Data Model Creation**
+
+- Use Eloquent ORM for database queries; use query builder for complex joins and conditions.
+- For data models, read `migrations` and `models` under `app/Models`.
+
+**Key Conventions**
+
+- Use `query strings` to manage URL state parameters.
+- Optimize SQL database for Laravel application, focusing on indexing and avoiding `N+1` queries.
+- Favor server-rendered pages for performance, leveraging Laravel's rendering and caching capabilities.
+- Use only client-side JavaScript for UI interactivity in small components.
+
+**Follow Laravel 11 Documentation for Data Fetching, Rendering, and Routing.**
+
+**Component Syntax**
+
+Always use this syntax: `public function functionName(Type $parameter): ReturnType`
+
+**SQL Syntax**
+
+Always use valid SQL syntax with double quotes for table and column names, adhering to SQL standards.
