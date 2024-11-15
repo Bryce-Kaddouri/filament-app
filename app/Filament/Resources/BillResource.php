@@ -7,6 +7,8 @@ use App\Filament\Resources\BillResource\RelationManagers;
 use App\Models\Bill;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
@@ -46,16 +48,46 @@ class BillResource extends Resource
                 ->preload()
                 ->searchable()
                 ->native(false)
+                
                 ->relationship('provider', 'name'),
             Forms\Components\TextInput::make('bill_number')
                 ->required()
                 ->maxLength(255),
-                FileUpload::make('file_url')
+                Forms\Components\DatePicker::make('bill_date')
+                ->native(false)
+                
+                ->required(),
+                Section::make('File Upload')
+                ->schema([
+                Select::make('file_type')
+                ->options([
+                    'pdf' => 'PDF',
+                    'image' => 'Image',
+                ])
+                ->reactive()
+                ->required(),
+                FileUpload::make('file_urls')
+                
+                ->directory('bills')
+                ->visibility('public')
                 ->label('PDF File')
                 ->acceptedFileTypes(['application/pdf'])
-                ->hidden(fn (Get $get) => $get('operation') === 'view')
+                ->hidden(fn (Get $get) => $get('operation') === 'view' || $get('file_type') === 'image' || $get('file_type') === null)
                 ->columnSpanFull()
-
+                ->reactive()
+                ->required(),
+                FileUpload::make('file_urls')
+                
+                ->directory('bills')
+                ->visibility('public')
+                ->label('Image File')
+                ->acceptedFileTypes(['image/*'])
+                ->image()
+                ->multiple(true)
+                
+                ->hidden(fn (Get $get) => $get('operation') === 'view' || $get('file_type') === 'pdf' || $get('file_type') === null)
+                ->columnSpanFull()
+                ->imageEditor()
                 ->reactive()
                 ->required(),
                 PdfViewerField::make('file_url')
@@ -64,10 +96,12 @@ class BillResource extends Resource
                     
                     return $operation !== 'view';
                 })
+                
 
             ->columnSpanFull()    
             ->minHeight('80svh')
             ->required(),
+            ]),
         ] ;
 
          if($form->getOperation() === 'view'){

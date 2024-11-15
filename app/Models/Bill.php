@@ -4,13 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use ZeeshanTariq\FilamentAttachmate\Core\InteractsWithAttachments;
 
 class Bill extends Model
 {
     /** @use HasFactory<\Database\Factories\BillFactory> */
     use HasFactory;
-    use InteractsWithAttachments;
 
     public function provider()
     {
@@ -22,5 +20,7 @@ class Bill extends Model
         'bill_number',
         'bill_date',
         'file_url',
+        'image_urls',
+        'file_type',
     ];
 }
