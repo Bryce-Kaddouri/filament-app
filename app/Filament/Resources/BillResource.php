@@ -33,11 +33,6 @@ class BillResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected function handleRecordCreation(array $data): Bill
-{
-    dd($data);
-    return static::getModel()::create($data);
-}
 
 
     public static function form(Form $form): Form
@@ -67,17 +62,29 @@ class BillResource extends Resource
                 ->reactive()
                 ->required(),
                 FileUpload::make('file_urls')
-                
+                ->storeFiles(false)
                 ->directory('bills')
                 ->visibility('public')
                 ->label('PDF File')
                 ->acceptedFileTypes(['application/pdf'])
+                ->multiple(true)
+                ->minFiles(1)
+                ->maxFiles(1)
+                ->registerActions([
+                    MediaAction::make('file_url')
+                    ->media(fn($record) => Storage::url($record->file_url))
+                    ->autoplay()
+                    ->icon('hugeicons-file-view')
+                    ->preload(false),
+                ])
+                ->openable()
+                ->downloadable()
                 ->hidden(fn (Get $get) => $get('operation') === 'view' || $get('file_type') === 'image' || $get('file_type') === null)
                 ->columnSpanFull()
                 ->reactive()
                 ->required(),
                 FileUpload::make('file_urls')
-                
+                ->previewable()
                 ->directory('bills')
                 ->visibility('public')
                 ->label('Image File')
@@ -91,10 +98,55 @@ class BillResource extends Resource
                 ->reactive()
                 ->required(),
                 PdfViewerField::make('file_url')
-                ->label('PDF Preview')    
-                ->hidden(function ($operation){
+                ->reactive()
+                ->visibility('private')
+                ->fileUrl(function($record, Get $get, $operation){
+                    if($operation === 'edit'){
+                        if($get('file_urls') === null || empty($get('file_urls'))){
+                            return '';
+                        }
+                        $fileUrls = $get('file_urls');
+                        $fileUrl = $fileUrls[array_key_first($fileUrls)];
+                        // check if file has changed
+                        if($fileUrl !== $record->file_urls[0]){
+                            /** @var TemporaryUploadedFile $tempFile */
+                            $tempFile = $fileUrl;
+                            // dd($tempFile->getRealPath());
+                            //dd($tempFile->getClientOriginalPath());
+                            // dd(Storage::url($tempFile->getClientOriginalPath()));
+                            $temporaryUrl = route('temporary-file.serve', ['filename' => basename($tempFile->getClientOriginalPath())]);
+                            // dd($temporaryUrl);
+                            return $temporaryUrl;
+                            // return 'http://localhost:8000/storage/app/private/livewire-tmp/8qZArOpjyzlYvuDaQigH95V1kmazgM-metaSW52b2ljZS1DVkRKTE8tMDAwMDMucGRm-.pdf';
+                        }else{
+                            return url('storage/bills/' . basename($record->file_urls[0]));
+                        }
+
+                            
+                    }else if ($operation === 'view'){
+                        return url('storage/bills/' . basename($record->file_urls[0]));
+                    }else{
+                        return null;
+                    }
                     
-                    return $operation !== 'view';
+                })
+
+                ->label('PDF Preview')    
+                
+                ->hidden(function ($operation, Get $get, $record){
+                    if($get('file_type') === 'pdf'){
+                        if($operation === 'edit' && array_key_first($get('file_urls')) !== null){
+                            /** @var array<string> $fileUrls */
+                            $fileUrls = $get('file_urls');
+                            $fileUrl = $fileUrls[array_key_first($fileUrls)];
+                            
+                            
+                            if($fileUrl !== $record->file_urls[0]){
+                                return false;
+                            }
+                        }
+                    }
+                    return ($operation !== 'view' || $operation !== 'edit') && $get('file_type') !== 'pdf';
                 })
                 
 

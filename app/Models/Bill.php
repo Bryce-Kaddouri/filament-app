@@ -19,8 +19,13 @@ class Bill extends Model
         'provider_id',
         'bill_number',
         'bill_date',
-        'file_url',
+        'file_urls',
         'image_urls',
         'file_type',
+    ];
+
+    protected $casts = [
+        'file_urls' => 'array',
+        'image_urls' => 'array',
     ];
 }

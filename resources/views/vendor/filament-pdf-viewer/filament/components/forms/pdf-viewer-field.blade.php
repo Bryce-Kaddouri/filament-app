@@ -3,6 +3,7 @@
 
     $hasInlineLabel = $hasInlineLabel();
     $statePath = $getStatePath();
+    
 @endphp
 
 <x-dynamic-component
@@ -25,13 +26,14 @@
                 ->class(['fi-fo-textarea overflow-hidden'])
         "
     >
+   
         @if(!empty($getState()))
             <iframe
                 class="w-full"
                 src="{{ $getRoute(current($getState())) }}" style="min-height: {{ $getMinHeight() }};">
             </iframe>
         @elseif(!empty($getFileUrl()))
-        
+            
             <iframe
                 class="w-full"
                 src="{{ $getFileUrl() }}" style="min-height: {{ $getMinHeight() }};">

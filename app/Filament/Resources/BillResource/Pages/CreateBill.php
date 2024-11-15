@@ -24,20 +24,19 @@ class CreateBill extends CreateRecord
 
 protected function handleRecordCreation(array $data): Model
 {
-   //dd($data);
+   // dd($data);
    $bill = static::getModel()::create($data);
    
    if($data['file_type'] === 'pdf'){
-    $directoryToWhereImagesShouldBeStored = storage_path('app/public/');
-    // dd($directoryToWhereImagesShouldBeStored);
-    $pdf = new \Spatie\PdfToImage\Pdf($directoryToWhereImagesShouldBeStored . $data['file_urls']);
+    /* $directoryToWhereImagesShouldBeStored = storage_path('app/public/');
+    $pdf = new \Spatie\PdfToImage\Pdf($directoryToWhereImagesShouldBeStored . $data['file_urls']); */
     
     /** @var int $numberOfPages */
+    /* $numberOfPages = $pdf->pageCount();
     $numberOfPages = $pdf->pageCount();
-    $numberOfPages = $pdf->pageCount();
-    $images = [];
+    $images = []; */
     // cehck if bills/bill_id exists
-    if (!file_exists($directoryToWhereImagesShouldBeStored. 'bills/' . $bill->id)) {
+    /* if (!file_exists($directoryToWhereImagesShouldBeStored. 'bills/' . $bill->id)) {
         mkdir($directoryToWhereImagesShouldBeStored. 'bills/' . $bill->id, 0777, true);
     }
     for ($i = 1; $i <= $numberOfPages; $i++) {
@@ -45,10 +44,10 @@ protected function handleRecordCreation(array $data): Model
         ->format(OutputFormat::Png)
         ->selectPage($i)
         ->save($directoryToWhereImagesShouldBeStored. 'bills/' . $bill->id . '/' . $i . '.png')[0];
-    }
+    } */
    
     // update bill with image urls
-    $bill->update(['image_urls' => $images]);   
+    /* $bill->update(['image_urls' => $images]);    */
     // dd($bill);
     // dd($directoryToWhereImagesShouldBeStored, $data, $pdf, $images);
     return $bill;
