@@ -76,7 +76,8 @@ class BillResource extends Resource
                 ->columnSpanFull()
                 ->reactive()
                 ->required(),
-                TextInput::make('image_url')->hidden(condition: false),
+                Forms\Components\Hidden::make('file_url'),
+
                 FileUpload::make('image_url')
                 ->previewable()
                 ->directory('bills')
