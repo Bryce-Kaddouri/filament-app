@@ -23,6 +23,11 @@ class CreateBill extends CreateRecord
         ->body('The bill has been created successfully.');
 }
 
+protected function handleRecordCreation(array $data): Model
+{
+    dd($data);
+    return static::getModel()::create($data);
+}
 // override create
 
 }

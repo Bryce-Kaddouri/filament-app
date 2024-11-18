@@ -5,10 +5,12 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\BillResource\Pages;
 use App\Filament\Resources\BillResource\RelationManagers;
 use App\Models\Bill;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
@@ -74,7 +76,8 @@ class BillResource extends Resource
                 ->columnSpanFull()
                 ->reactive()
                 ->required(),
-                FileUpload::make('file_url')
+                TextInput::make('image_url')->hidden(condition: false),
+                FileUpload::make('image_url')
                 ->previewable()
                 ->directory('bills')
                 ->visibility('public')
@@ -82,7 +85,26 @@ class BillResource extends Resource
                 ->acceptedFileTypes(['image/*'])
                 ->image()
                 ->multiple(true)
-                
+                ->afterStateUpdated(function(Set $set, Get $get, ?array $state){
+                    /** @var TemporaryUploadedFile[] $tempFiles */
+                    $tempFiles = $state;
+                    $data = [
+                        'title' => 'Welcome to ItSolutionStuff.com',
+                        'date' => date('m/d/Y'),
+                        'images' => $tempFiles
+                    ]; 
+                    
+                          
+                    $pdf = Pdf::loadView('myPDF', $data);
+                    // dd($pdf);
+                    $randomNamedPdf = 'myPDF-' . time() . '.pdf';
+                    $pdf->save(storage_path('app/private/livewire-tmp/' . $randomNamedPdf));
+                    // $pdfUrl = route('temporary-file.serve', ['filename' => 'myPDF.pdf']);
+                    $set('file_url', array($randomNamedPdf));
+                    
+                    
+                   //dd($pdfUrl);
+                })
                 ->hidden(fn (Get $get) => $get('operation') === 'view' || $get('file_type') === 'pdf' || $get('file_type') === null)
                 ->columnSpanFull()
                 ->imageEditor()
@@ -92,6 +114,7 @@ class BillResource extends Resource
                 ->reactive()
                 ->visibility('private')
                 ->fileUrl(function($record, Get $get, $operation){
+
                     if($operation === 'edit'){
 
                         if($get('file_url') === null || empty($get('file_url'))){
@@ -123,6 +146,16 @@ class BillResource extends Resource
                            return '';
                         }else{
                             // dd($get('file_url'));
+                            // if pdf 
+                            if($get('file_type') === 'image'){
+                                $fileUrls = $get('file_url');
+                                // dd($fileUrls);
+
+                                $fileUrl = $fileUrls[array_key_first($fileUrls)];
+                                $temporaryUrl = route('temporary-file.serve', ['filename' => basename($fileUrl)]);
+                                return $temporaryUrl;
+                            }
+                            
                             $fileUrl = $get('file_url');
                             $fileUrl = $fileUrl[array_key_first($fileUrl)];
                             // dd($fileUrl);
@@ -131,12 +164,15 @@ class BillResource extends Resource
                         // check if file has changed
                           /** @var TemporaryUploadedFile $tempFile */
                           $tempFile = $fileUrl;
+                        // dd($tempFile);
+                           
                           // dd($tempFile->getRealPath());
                           //dd($tempFile->getClientOriginalPath());
                           // dd(Storage::url($tempFile->getClientOriginalPath()));
                           $temporaryUrl = route('temporary-file.serve', ['filename' => basename($tempFile->getClientOriginalPath())]);
                           // dd($temporaryUrl);
                           return $temporaryUrl;
+                            
                        
                     }
                     }
@@ -146,7 +182,7 @@ class BillResource extends Resource
                 ->label('PDF Preview')    
                 
                 ->hidden(function ($operation, Get $get, $record){
-                    if($get('file_type') === 'pdf'){
+                    /* if($get('file_type') === 'pdf'){
                         if($operation === 'edit' && array_key_first($get('file_url')) !== null){
                            
                             $fileUrl = $get('file_url');
@@ -157,7 +193,8 @@ class BillResource extends Resource
                             }
                         }
                     }
-                    return ($operation !== 'view' || $operation !== 'edit') && $get('file_type') !== 'pdf';
+                    return ($operation !== 'view' || $operation !== 'edit') && $get('file_type') !== 'pdf'; */
+                    return false;
                 })
                 
 

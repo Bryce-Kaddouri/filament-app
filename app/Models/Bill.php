@@ -23,7 +23,5 @@ class Bill extends Model
         'file_type',
     ];
 
-    protected $casts = [
-        'file_url' => 'string',
-    ];
+   
 }
