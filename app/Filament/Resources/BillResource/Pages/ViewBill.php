@@ -14,6 +14,10 @@ class ViewBill extends ViewRecord
     {
         return [
             Actions\EditAction::make(),
+            Actions\Action::make('bill-ai')
+                ->url(fn () => route('bill-ai.index', ['bill' => $this->record->id]))
+                ->label('AI')
+                ->icon('heroicon-o-sparkles'),
         ];
     }
 }
