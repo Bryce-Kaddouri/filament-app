@@ -1,16 +1,19 @@
 <?php
 
 namespace App\Filament\Resources;
-
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use App\Filament\Resources\BillResource\Pages;
 use App\Filament\Resources\BillResource\RelationManagers;
 use App\Models\Bill;
+use App\Models\Product;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Forms;
+use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
+
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
@@ -111,10 +114,12 @@ class BillResource extends Resource
                 ->imageEditor()
                 ->reactive()
                 ->required(), 
+                // action button to generate datas with ai 
+                
                 PdfViewerField::make('file_preview')
                 ->reactive()
                 ->visibility('private')
-                ->fileUrl(function($record, Get $get, $operation){
+                ->fileUrl(function($record, Get $get, $operation, $state){
 
                     if($operation === 'edit'){
 
@@ -123,17 +128,12 @@ class BillResource extends Resource
                         }
                         $fileUrls = $get('file_url');
                         $fileUrl = $fileUrls[array_key_first($fileUrls)];
-                        // check if file has changed
                         if($fileUrl !== $record->file_url){
-                            /** @var TemporaryUploadedFile $tempFile */
+                          
                             $tempFile = $fileUrl;
-                            // dd($tempFile->getRealPath());
-                            //dd($tempFile->getClientOriginalPath());
-                            // dd(Storage::url($tempFile->getClientOriginalPath()));
+                            
                             $temporaryUrl = route('temporary-file.serve', ['filename' => basename($tempFile->getClientOriginalPath())]);
-                            // dd($temporaryUrl);
                             return $temporaryUrl;
-                            // return 'http://localhost:8000/storage/app/private/livewire-tmp/8qZArOpjyzlYvuDaQigH95V1kmazgM-metaSW52b2ljZS1DVkRKTE8tMDAwMDMucGRm-.pdf';
                         }else{
                             return url('storage/bills/' . basename($record->file_url));
                         }
@@ -146,12 +146,9 @@ class BillResource extends Resource
                         if($get('file_url') === null || empty($get('file_url'))){
                            return '';
                         }else{
-                            // dd($get('file_url'));
-                            // if pdf 
-                            if($get('file_type') === 'image'){
-                                $fileUrls = $get('file_url');
-                                // dd($fileUrls);
 
+                            /* if($get('file_type') === 'image'){
+                                $fileUrls = $get('file_url');
                                 $fileUrl = $fileUrls[array_key_first($fileUrls)];
                                 $temporaryUrl = route('temporary-file.serve', ['filename' => basename($fileUrl)]);
                                 return $temporaryUrl;
@@ -159,25 +156,24 @@ class BillResource extends Resource
                             
                             $fileUrl = $get('file_url');
                             $fileUrl = $fileUrl[array_key_first($fileUrl)];
-                            // dd($fileUrl);
+                        
+                            $tempFile = $fileUrl;
+                        
+                            $temporaryUrl = route('temporary-file.serve', ['filename' => basename($tempFile->getClientOriginalPath())]);
+                            return $temporaryUrl; */
 
+                            $file_url_key = array_key_first($get('file_url'));
+                            $file_url = $get('file_url')[$file_url_key];
+                            $temporaryUrl = route('temporary-file.serve', ['filename' => basename($file_url), 'isPrivate' => false]);
+                            // dd($temporaryUrl);
 
-                        // check if file has changed
-                          /** @var TemporaryUploadedFile $tempFile */
-                          $tempFile = $fileUrl;
-                        // dd($tempFile);
-                           
-                          // dd($tempFile->getRealPath());
-                          //dd($tempFile->getClientOriginalPath());
-                          // dd(Storage::url($tempFile->getClientOriginalPath()));
-                          $temporaryUrl = route('temporary-file.serve', ['filename' => basename($tempFile->getClientOriginalPath())]);
-                          // dd($temporaryUrl);
-                          return $temporaryUrl;
-                            
-                       
+                            $fullPath = storage_path('app/public/' . $file_url);
+                            // dd($fullPath);
+                            // dd($fullPath);
+                            return $temporaryUrl; 
                     }
                     }
-                    
+
                 })
 
                 ->label('PDF Preview')    
@@ -200,8 +196,17 @@ class BillResource extends Resource
                 
 
             ->columnSpanFull()    
-            ->minHeight('80svh')
-            ,
+            ->minHeight('80svh'),
+            Repeater::make('line_items')
+            
+                ->schema([
+                    TextInput::make('qty')->required(),
+                    TextInput::make('unit_price')->required(),
+                    Select::make('product')
+                    ->options(Product::all()->pluck('name', 'id'))
+                    ->required(),
+                ])
+    ->columns(4)
             ]),
         ] ;
 

@@ -17,7 +17,7 @@ return [
 
     'paths' => ['api/*', 'sanctum/csrf-cookie', 'filament/*'],
     'allowed_methods' => ['*'], // Allow all methods
-    'allowed_origins' => ['http://localhost:8000'], // Specify your frontend domain
+    'allowed_origins' => ['*'], // Specify your frontend domain
     'allowed_origins_patterns' => [],
     'allowed_headers' => ['*'], // Allow all headers
     'exposed_headers' => [],

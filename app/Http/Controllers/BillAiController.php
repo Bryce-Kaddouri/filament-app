@@ -18,7 +18,7 @@ use Google\Cloud\DocumentAI\V1\Document\TextAnchor\TextSegment;
 class BillAiController extends Controller
 {
 
-    public function processDocument(string $filePath): Document
+    public function processDocument(string $filePath, bool $isPrivate = false): Document
 {
     // Set the path to your service account key
     $credentialsPath = base_path('test-extract-text-ia-c0d4188a9958.json');
@@ -38,9 +38,15 @@ class BillAiController extends Controller
             'apiEndpoint' => 'eu-documentai.googleapis.com',
         ];
         $client = new DocumentProcessorServiceClient($clientOptions);
+        $fullPath = storage_path('app/public/' . $filePath);
+        $fileExist = file_exists($fullPath);
+        if(!$fileExist){
+            throw new \RuntimeException('File not found at: ' . $fullPath);
+        }
 
         // Read the content of the file to be processed
-        $fileContent = file_get_contents($filePath);
+        $fileContent = file_get_contents($fullPath);
+        // dd($fileContent);
 
         // Create a RawDocument object
         $rawDocument = new RawDocument([
@@ -77,35 +83,6 @@ class BillAiController extends Controller
             $dimensions[] = $page->getDimension();
         }
 
-        /* dd($images_base64, $dimensions);
-        $entities = $document->getEntities();
-        foreach($entities as $entity){
-            switch($entity->getType()){
-                case 'invoice_id':
-                    $invoice_id = $entity->getMentionText();
-                    break;
-                case 'invoice_date':
-                    $invoice_date = $entity->getMentionText();
-                    break;
-                case 'line_item':
-                    
-                    if ($entity->getProperties()->count() > 0 ) {
-                        // get all
-                        $isLineItem = false;
-                        foreach($entity->getProperties() as $property){
-                            if($property->getType() == 'line_item/unit_price' || $property->getType() == 'line_item/quantity'){
-                                $isLineItem = true;
-                                break;
-                            }
-                            
-                        }
-                        if($isLineItem){
-                            $lines_items_with_qty[] = $entity->getProperties();
-                        }
-                    }
-                    break;
-            }
-        } */
         
         
 
