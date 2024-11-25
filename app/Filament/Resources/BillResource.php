@@ -6,14 +6,17 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use App\Filament\Resources\BillResource\Pages;
 use App\Filament\Resources\BillResource\RelationManagers;
+use App\Forms\Components\DisplayDocAi;
+use App\Forms\Components\ImageAiField;
 use App\Models\Bill;
 use App\Models\Product;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Forms;
 use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Section;
-
+use Filament\Forms\Components\ViewField;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
@@ -31,6 +34,7 @@ use Joaopaulolndev\FilamentPdfViewer\Forms\Components\PdfViewerField;
 use Joaopaulolndev\FilamentPdfViewer\Infolists\Components\PdfViewerEntry;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use ZeeshanTariq\FilamentAttachmate\Forms\Components\AttachmentFileUpload;
+use Google\Cloud\DocumentAI\V1\Document;
 
 class BillResource extends Resource
 {
@@ -42,6 +46,8 @@ class BillResource extends Resource
 
     public static function form(Form $form): Form
     {
+
+
         $fields = [
             Forms\Components\Select::make('provider_id')
                 ->required()
@@ -197,6 +203,10 @@ class BillResource extends Resource
 
             ->columnSpanFull()    
             ->minHeight('80svh'),
+            
+            
+        DisplayDocAi::make('my_images'),
+            
             Repeater::make('line_items')
             
                 ->schema([
@@ -299,6 +309,15 @@ class BillResource extends Resource
             'view' => Pages\ViewBill::route('/{record}'),
             'edit' => Pages\EditBill::route('/{record}/edit'),
         ];
+    }
+
+    private function getImagesWithDoc(Document $document){
+        $pages = $document->getPages();
+        $images = [];
+        foreach($pages as $page){
+            $images[] = $page->getImage();
+        }
+        return $images;
     }
 
     

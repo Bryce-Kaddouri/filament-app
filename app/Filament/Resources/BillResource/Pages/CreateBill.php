@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Google\Cloud\DocumentAI\V1\Document\Entity;
 use Google\Protobuf\Internal\RepeatedField;
 use Carbon\Exceptions\InvalidFormatException;
+use Imagick;
 
 class CreateBill extends CreateRecord
 {
@@ -124,8 +125,72 @@ public function mount(): void
 
         // dd($bill_id, $bill_date, $supplier_name, $lines_items_with_qty, $images_base64, $dimensions);
         $parsedBillDate = $this->parseDate($bill_date);
+
+
+        
+        $imagesTest = array();
+        $index = 0;
+        foreach($images_base64 as $image){
+            $boj = [
+                'mime_type' => $image->getMimeType(),
+                'content_encoded' => base64_encode($image->getContent()),
+                'width' => $image->getWidth(),
+                'height' => $image->getHeight(),
+                'points' => [],
+            ];
+            $imagesTest[] = $boj;
+            $index++;
+        }
+        $points = [];
+        // add border to text in the images based on entities
+        // dd($entities);
+        for($j=0; $j < count($entities); $j++){
+            if($entities[$j]->getType() === 'supplier_name'){
+            $entity = $entities[$j];
+                $pageAnchor = $entity->getPageAnchor();
+                $pageRef = $pageAnchor->getPageRefs();
+                $pageRef = $pageRef[0];
+                $page = $pageRef->getPage();
+                $boundingPoly = $pageRef->getBoundingPoly();
+                // dd($boundingPoly->getNormalizedVertices());
+                $vertex = $boundingPoly->getNormalizedVertices();
+                foreach($vertex as $v){
+                    // add to points
+                    $points[] = array(
+                        'x' => $v->getX(),
+                        'y' => $v->getY(),
+                    );
+                }
+            }
+
+            $imagesTest[0]['supplier_name_points'] = $points;
+                   
+                
+
+                // dd($pageAnchor);
+            
+
+    
+        }
+
+         $imagesTest[0]['points'] = $points;
+
+         // Load the image using Imagick
+         // modify the image to add the points to the image to add a sqaure on top right corner with bg red
+
+
+       /*  dd($imagesTest);
+
+        dd($entities);
+
+        dd($imagesTest); */
+
+        // dd($imagesTest);
+
+
         
         $this->form->fill([
+            'my_images' => $imagesTest,
             'provider_id' => $provider_id,
             'file_type' => 'pdf',
             'bill_number' => $bill_id,
