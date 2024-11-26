@@ -5,8 +5,13 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Resources\ProductResource\RelationManagers;
 use App\Models\Product;
+use App\Models\Provider;
 use Filament\Forms;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -23,6 +28,25 @@ class ProductResource extends Resource
 
     public static function form(Form $form): Form
     {
+
+        $selectedProviders = $form->getRawState()['products_code_by_provider'] ?? [];
+        // filter to make sure not null
+        $selectedProviders = array_filter($selectedProviders, function($provider){
+            return $provider['provider_id'] !== null;
+        });
+        $providersIds = [];
+        if(count($selectedProviders) > 0){
+            foreach($selectedProviders as $provider){
+                $providersIds[] = $provider['provider_id'];
+            }
+        }
+
+        if(count($providersIds) > 2){
+            dd($providersIds);
+        }
+
+
+        
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
@@ -34,10 +58,57 @@ class ProductResource extends Resource
                 Forms\Components\FileUpload::make('image')
                     ->image(),
                 # field to link many to many relationship with provider
-                Forms\Components\Select::make('providers')
+                /* Forms\Components\Select::make('providers')
                     ->relationship('providers', 'name')
                     ->multiple()
-                    ->preload(),
+                    ->preload(), */
+                Hidden::make('selected_providers')
+                    ->default([]),
+                Repeater::make('products_code_by_provider')
+                ->reactive()
+                ->afterStateUpdated(
+                    function ($state, Set $set, Get $get) {
+                        $set('selected_providers', $state);
+                        
+                    }
+                )
+                    ->schema(
+                        [
+                            Forms\Components\Select::make('provider_id')
+                            
+                                
+                                ->required()
+                                ->native(false)
+                                ->preload()
+                                ->searchable()
+                                ->preload()
+                                ->reactive()
+                                ->updateOptionUsing(
+                                    function ($state, $record, $set) {
+                                        dd($state, $record, $set);
+                                    }
+                                )
+                                
+                                ->options(function ($state, Get $get, $component) use ($providersIds) {
+                                    if($state){
+                                        
+                                        return Provider::find($state)->pluck('name', 'id')->toArray();
+                                    }else{
+                                        
+                                        
+                                       
+                                        return Provider::whereNotIn('id', $providersIds)->pluck('name', 'id')->toArray();
+                                    }
+                                }) 
+                                
+                                ,
+                        Forms\Components\TextInput::make('product_code')
+                            ->required()
+                            ->maxLength(255),
+                    ]
+                )
+                ->columns(2)
+                ->columnSpanFull(),
             ]);
     }
 
