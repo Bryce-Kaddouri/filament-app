@@ -21,7 +21,7 @@ class BillAiController extends Controller
     public function processDocument(string $filePath, bool $isPrivate = false): Document
 {
     // Set the path to your service account key
-    $credentialsPath = base_path('test-extract-text-ia-4228a74fbf58.json');
+    $credentialsPath = base_path('google_credential.json');
 
     // Check if the credentials file exists
     if (!file_exists($credentialsPath)) {
