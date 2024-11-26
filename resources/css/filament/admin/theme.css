@@ -1,0 +1,15 @@
+@import "/vendor/filament/filament/resources/css/theme.css";
+
+@config 'tailwind.config.js';
+
+.social-link {
+    @apply text-blue-600;
+}
+
+.full-screen {
+    @apply w-full h-full !important;
+}
+
+.red-square-border {
+    @apply border-red-500 !important;
+}

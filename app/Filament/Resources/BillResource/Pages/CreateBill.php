@@ -19,6 +19,7 @@ use Google\Cloud\DocumentAI\V1\Document\Entity;
 use Google\Protobuf\Internal\RepeatedField;
 use Carbon\Exceptions\InvalidFormatException;
 use Imagick;
+use App\Services\ParsedImage;
 
 class CreateBill extends CreateRecord
 {
@@ -63,161 +64,47 @@ public function mount(): void
         $provider_id = request()->provider_id;
         $billAiController = new BillAiController();
         $document = $billAiController->processDocument($fileUrl, false);
-        $bill_id = null;
-        $bill_date = null;
-        $supplier_name = null;
-        $lines_items_with_qty = [];
-        $images_base64 = [];
-        $dimensions = null;
-
-        $entities = $document->getEntities();
-        // dd($entities);
-        foreach($entities as $entity){
-            /*
-             * @var Entity $entity
-             */
-            if($entity->getType() === 'supplier_name'){
-                $supplier_name = $entity->getMentionText();
+        $jsonData = json_decode($document->serializeToJsonString(),true)['entities'];
+        $entities = [];
+        foreach ($jsonData as $entity) {
+            if (isset($entity['pageAnchor']['pageRefs'][0]['boundingPoly']['normalizedVertices'])) {
+                $vertices = $entity['pageAnchor']['pageRefs'][0]['boundingPoly']['normalizedVertices'];
+                $entities[] = [
+                    'type' => $entity['type'],
+                    'mentionText' => $entity['mentionText'],
+                    'confidence' => $entity['confidence'],
+                    'vertices' => $vertices,
+                ];
             }
-            if($entity->getType() === 'invoice_date'){
-                $bill_date = $entity->getMentionText();
-            }
-            if($entity->getType() === 'invoice_id'){
-                    $bill_id = $entity->getMentionText();
-            }
-            if($entity->getType() === 'line_item'){
-                $properties = $entity->getProperties();
-                $hasQty = false;
-                $hasUnitPrice = false;
-                foreach($properties as $property){
-                    /*
-                     * @var Property $property
-                     */
-                    
-                    if($property->getType() === 'line_item/quantity'){
-                        $hasQty = true;
-                    }
-                    if($property->getType() === 'line_item/unit_price'){
-                        $hasUnitPrice = true;
-                    }
-                   
-                }
-                if($hasQty && $hasUnitPrice){
-                    $lines_items_with_qty[] = $properties;
-                }
-
-            }
-            
-            // dd($entity);
-            
         }
 
-        // images
-        foreach($document->getPages() as $page){
-            $images_base64[] = $page->getImage();
-            $dimensions[] = $page->getDimension();
-        }
-
-        // Normalize the supplier name by removing unwanted characters and extra spaces
-        $cleanedSupplierName = preg_replace('/\s+/', ' ', trim($supplier_name)); // Normalize spaces
-        $cleanedSupplierName = preg_replace('/[^a-zA-Z0-9 à-ÿ]/u', '', $cleanedSupplierName); // Remove unwanted characters
-        // dimensions
-
-        // dd($bill_id, $bill_date, $supplier_name, $lines_items_with_qty, $images_base64, $dimensions);
-        $parsedBillDate = $this->parseDate($bill_date);
+      
 
 
-        
-        $imagesTest = array();
-        $index = 0;
-        foreach($images_base64 as $image){
-            $boj = [
-                'mime_type' => $image->getMimeType(),
-                'content_encoded' => base64_encode($image->getContent()),
-                'width' => $image->getWidth(),
-                'height' => $image->getHeight(),
-                'points' => [],
-            ];
-            $imagesTest[] = $boj;
-            $index++;
-        }
-        $points = [];
-        // add border to text in the images based on entities
-        // dd($entities);
-        for($j=0; $j < count($entities); $j++){
-            if($entities[$j]->getType() === 'supplier_name'){
-            $entity = $entities[$j];
-                $pageAnchor = $entity->getPageAnchor();
-                $pageRef = $pageAnchor->getPageRefs();
-                $pageRef = $pageRef[0];
-                $page = $pageRef->getPage();
-                $boundingPoly = $pageRef->getBoundingPoly();
-                // dd($boundingPoly->getNormalizedVertices());
-                $vertex = $boundingPoly->getNormalizedVertices();
-                foreach($vertex as $v){
-                    // add to points
-                    $points[] = array(
-                        'x' => $v->getX(),
-                        'y' => $v->getY(),
-                    );
-                }
-            }
-
-            $imagesTest[0]['supplier_name_points'] = $points;
-                   
-                
-
-                // dd($pageAnchor);
-            
-
-    
-        }
-
-         $imagesTest[0]['points'] = $points;
-
-         // Load the image using Imagick
-         // modify the image to add the points to the image to add a sqaure on top right corner with bg red
+$parsedImage = new ParsedImage($document);
+$dataForFrontend = $parsedImage->toJsonSerializable();
 
 
-       /*  dd($imagesTest);
 
-        dd($entities);
 
-        dd($imagesTest); */
 
-        // dd($imagesTest);
 
+
+
+  
 
         
         $this->form->fill([
-            'my_images' => $imagesTest,
+            'data_for_img' => $dataForFrontend,
+            'doc' => $document->serializeToJsonString(),
             'provider_id' => $provider_id,
             'file_type' => 'pdf',
-            'bill_number' => $bill_id,
+            'bill_number' => '1',
             'file_url' => $fileUrl,
-            'bill_date' => $parsedBillDate,
-            'line_items' => array_map(function(RepeatedField $item){
-                
-                $field = array();
-                foreach($item as $property){
-                    /*
-                     * @var Property $property
-                     */
-                    if($property->getType() === 'line_item/quantity'){
-                        $field['qty'] = $property->getMentionText();
-                    }
-                    if($property->getType() === 'line_item/unit_price'){
-                        $field['unit_price'] = $property->getMentionText();
-                    }
-                    if($property->getType() === 'line_item/product'){
-                        $field['product'] = null;
-                    }
-                }
-                /* $field['qty'] = '12';
-                $field['unit_price'] = '12';
-                $field['product'] = '12'; */
-                return $field;
-            }, $lines_items_with_qty),
+            'bill_date' => $parsedImage->getInvoiceDate(),
+            'invoice_id' => $parsedImage->getInvoiceId(),
+            'line_items' => $parsedImage->getLineItems(),
+           
         ]);
     }
 

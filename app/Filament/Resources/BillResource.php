@@ -122,7 +122,7 @@ class BillResource extends Resource
                 ->required(), 
                 // action button to generate datas with ai 
                 
-                PdfViewerField::make('file_preview')
+                /* PdfViewerField::make('file_preview')
                 ->reactive()
                 ->visibility('private')
                 ->fileUrl(function($record, Get $get, $operation, $state){
@@ -153,21 +153,7 @@ class BillResource extends Resource
                            return '';
                         }else{
 
-                            /* if($get('file_type') === 'image'){
-                                $fileUrls = $get('file_url');
-                                $fileUrl = $fileUrls[array_key_first($fileUrls)];
-                                $temporaryUrl = route('temporary-file.serve', ['filename' => basename($fileUrl)]);
-                                return $temporaryUrl;
-                            }
-                            
-                            $fileUrl = $get('file_url');
-                            $fileUrl = $fileUrl[array_key_first($fileUrl)];
-                        
-                            $tempFile = $fileUrl;
-                        
-                            $temporaryUrl = route('temporary-file.serve', ['filename' => basename($tempFile->getClientOriginalPath())]);
-                            return $temporaryUrl; */
-
+                           
                             $file_url_key = array_key_first($get('file_url'));
                             $file_url = $get('file_url')[$file_url_key];
                             $temporaryUrl = route('temporary-file.serve', ['filename' => basename($file_url), 'isPrivate' => false]);
@@ -185,39 +171,32 @@ class BillResource extends Resource
                 ->label('PDF Preview')    
                 
                 ->hidden(function ($operation, Get $get, $record){
-                    /* if($get('file_type') === 'pdf'){
-                        if($operation === 'edit' && array_key_first($get('file_url')) !== null){
-                           
-                            $fileUrl = $get('file_url');
-                            
-                            
-                            if($fileUrl !== $record->file_url){
-                                return false;
-                            }
-                        }
-                    }
-                    return ($operation !== 'view' || $operation !== 'edit') && $get('file_type') !== 'pdf'; */
+                  
                     return false;
                 })
                 
 
             ->columnSpanFull()    
-            ->minHeight('80svh'),
+            ->minHeight('80svh'), */
             
-            
-        DisplayDocAi::make('my_images'),
-            
+            Section::make('Data from AI')
+            ->schema([
+        DisplayDocAi::make('data_for_img'),
+            ]),
+        
+            Section::make('Line Items')
+            ->schema([
             Repeater::make('line_items')
             
                 ->schema([
-                    TextInput::make('qty')->required(),
+                    TextInput::make('quantity')->required(),
                     TextInput::make('unit_price')->required(),
                     Select::make('product')
                     ->options(Product::all()->pluck('name', 'id'))
                     ->required(),
                 ])
     ->columns(4)
-            ]),
+                ]),])
         ] ;
 
          if($form->getOperation() === 'view'){

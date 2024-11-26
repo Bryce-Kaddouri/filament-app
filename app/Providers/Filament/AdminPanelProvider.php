@@ -40,6 +40,7 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->emailVerification()
             ->passwordReset()
+            ->viteTheme('resources/css/filament/admin/theme.css')
             // ->profile(EditProfile::class, isSimple: false)          
             ->colors([
                 'primary' => Color::Amber,
