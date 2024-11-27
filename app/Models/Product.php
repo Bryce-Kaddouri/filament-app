@@ -20,6 +20,11 @@ class Product extends Model
         return $this->hasMany(Price::class);
     }
 
+    public function products_code_by_provider()
+    {
+        return $this->hasMany(ProductCodeByProvider::class);
+    }
+
     public function __toString()
     {
         return $this->name;

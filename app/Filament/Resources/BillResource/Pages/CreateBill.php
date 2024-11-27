@@ -36,16 +36,8 @@ class CreateBill extends CreateRecord
 
 protected function handleRecordCreation(array $data): Model
 {
+    
     // dd($data);
-    if($data['file_type'] === 'image'){
-    $fileUrl = storage_path('app/private/livewire-tmp/' . $data['file_url'][0]);
-    // check if
-    // move file to public folder
-    $newPath = storage_path('app/public/bills/' . basename($fileUrl));
-    rename($fileUrl, $newPath);
-    $data['file_url'] = 'bills/' . basename($fileUrl);
-    $data['file_type'] = 'pdf';
-    }
 
    
     /* if($isExist){

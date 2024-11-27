@@ -14,12 +14,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('product_code_by_providers', function (Blueprint $table) {
-            $table->foreignId('product_id')->constrained('products');
-            $table->foreignId('provider_id')->constrained('providers');
+            $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
+            $table->foreignId('provider_id')->constrained('providers')->onDelete('cascade');
             $table->string('code');
             $table->primary(['product_id', 'provider_id']);
             $table->timestamps();
         });
+
+        
     }
 
     /**

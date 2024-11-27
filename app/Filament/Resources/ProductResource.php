@@ -41,9 +41,7 @@ class ProductResource extends Resource
             }
         }
 
-        if(count($providersIds) > 2){
-            dd($providersIds);
-        }
+      
 
 
         
@@ -83,26 +81,22 @@ class ProductResource extends Resource
                                 ->searchable()
                                 ->preload()
                                 ->reactive()
-                                ->updateOptionUsing(
-                                    function ($state, $record, $set) {
-                                        dd($state, $record, $set);
-                                    }
-                                )
+                                ->validationAttribute('Provider')
+                                
+                                
                                 
                                 ->options(function ($state, Get $get, $component) use ($providersIds) {
-                                    if($state){
-                                        
-                                        return Provider::find($state)->pluck('name', 'id')->toArray();
+                                    $query = Provider::query();
+                                    if($state){ 
+                                        $query->where('id', $state);
                                     }else{
-                                        
-                                        
-                                       
-                                        return Provider::whereNotIn('id', $providersIds)->pluck('name', 'id')->toArray();
+                                        $query->whereNotIn('id', $providersIds);
                                     }
+                                    return $query->pluck('name', 'id')->toArray();
                                 }) 
                                 
                                 ,
-                        Forms\Components\TextInput::make('product_code')
+                        Forms\Components\TextInput::make('code')
                             ->required()
                             ->maxLength(255),
                     ]
@@ -132,11 +126,11 @@ class ProductResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\ImageColumn::make('image'),
                 # field to link many to many relationship with provider
-                Tables\Columns\TextColumn::make('providers.name')
+                Tables\Columns\TextColumn::make('products_code_by_provider.provider_id')
                     ->label('Providers')
                     ->badge()
                     ->getStateUsing(function ($record) {
-                        return count($record->providers->pluck('name')->toArray());
+                        return count($record->products_code_by_provider->pluck('provider_id')->toArray());
                     }),
             ])
             ->filters([
