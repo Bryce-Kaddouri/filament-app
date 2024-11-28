@@ -23,5 +23,8 @@ class Bill extends Model
         'file_type',
     ];
 
+    // cast file_url to array
+    
+
    
 }

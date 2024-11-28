@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use App\Models\Product;
+use Carbon\Carbon;
+use Carbon\Exceptions\InvalidFormatException;
 use Google\Cloud\DocumentAI\V1\Document;
 
 class ParsedImage
@@ -77,7 +80,13 @@ class ParsedImage
                                 $item['unit_price'] = $property->getMentionText();
                             }elseif($property->getType() == 'line_item/product_code'){
                                 /* $item['product'] = $property->getMentionText(); */
-                                $item['product_code'] = null;
+                                $product = Product::with('products_code_by_provider')->whereHas('products_code_by_provider', function($query) use ($property){
+                                    $query->where('code', $property->getMentionText());
+                                })->first();
+
+                                // dd($product);
+
+                                $item['product'] = $product ? $product->id : null;
                             }
                         
                     }
@@ -131,7 +140,7 @@ class ParsedImage
         ];
     }
     public function getInvoiceDate(){
-        return $this->invoiceDate;
+        return $this->parseDate($this->invoiceDate);
     }
 
     public function getInvoiceId(){
@@ -140,5 +149,33 @@ class ParsedImage
 
     public function getLineItems(){
         return $this->lineItems;
+    }
+
+    private function parseDate(string $dateString): ?\Carbon\Carbon
+    {
+        // Trim the date string to remove any leading or trailing whitespace
+        $formats = [
+            'Y-m-d',        // 2024-11-12
+            'd/m/Y',        // 12/11/2024
+            'd M Y',        // 12 Nov 2024
+            'd F Y',        // 12 November 2024
+            'm/d/Y',        // 11/12/2024
+            'Y/m/d',        // 2024/11/12
+            // Add more formats as needed
+        ];
+    
+        foreach ($formats as $format) {
+            try {
+                return Carbon::createFromFormat($format, $dateString);
+            } catch (InvalidFormatException $e) {
+                // Try the next format
+                continue;
+            }
+        }
+    
+        // If no formats match, throw an exception or return null
+        /* throw new InvalidFormatException("Invalid date format: $dateString"); */
+
+        return null; // Return null if no format matched
     }
 }

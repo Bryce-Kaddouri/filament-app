@@ -14,9 +14,11 @@ class TemporaryFileController extends Controller
         $fileExists = false;
 
         if($request->isPrivate){
-            $fullpath = 'livewire-tmp/' . $filename;
+            $fullpath = 'app/private/livewire-tmp/' . $filename;
 
-            $fileExists = Storage::disk('local')->exists('livewire-tmp/' . $filename);
+            $filePath = 'livewire-tmp/' . $filename;
+            $fileExists = Storage::disk('local')->exists($filePath);
+           
 
         }else{
             $fullpath = 'app/public/bills/' . $filename;

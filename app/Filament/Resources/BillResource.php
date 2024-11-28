@@ -8,11 +8,14 @@ use App\Filament\Resources\BillResource\Pages;
 use App\Filament\Resources\BillResource\RelationManagers;
 use App\Forms\Components\DisplayDocAi;
 use App\Forms\Components\ImageAiField;
+use App\Http\Controllers\BillAiController;
 use App\Models\Bill;
 use App\Models\Product;
+use App\Services\ParsedImage;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Forms;
 use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Section;
@@ -26,6 +29,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Hugomyb\FilamentMediaAction\Forms\Components\Actions\MediaAction as FormMediaAction;
 use Hugomyb\FilamentMediaAction\Tables\Actions\MediaAction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -47,8 +51,92 @@ class BillResource extends Resource
     public static function form(Form $form): Form
     {
 
+        $fileUploadActions = [
+               
+            
+        ];
 
-        $fields = [
+         if(isset($form->getRawState()['file_url'])){
+            $fileUploadActions[] = FormMediaAction::make('file_url')
+            ->label('View PDF')
+            ->media(function($state){
+               // check if is array 
+               if(is_array($state)){
+                 // check if is type of TemporaryUploadedFile
+                 $firstElement = array_key_first($state);
+                 if($state[$firstElement] instanceof TemporaryUploadedFile){
+                    // dd($state, 'if');
+                    // use route to serve the file
+                    //dd($state[$firstElement]);
+                     // dd($state[$firstElement]->getFilename());
+                    $url = route('temporary-file.serve', ['filename' => $state[$firstElement]->getFilename(), 'isPrivate' => true]);
+                    // dd($url);
+                    return $url;
+                }else{
+                    
+                    dd($state, 'else', 'runtype', gettype($state));
+                    return Storage::url($state);
+                }
+               }else{
+                return Storage::url($state);
+               }
+            })
+            ->autoplay()    
+            ->icon('hugeicons-file-view')
+            ->preload(false);
+
+
+            $fileUploadActions[] = Action::make('process_document')
+            
+            
+            ->label('Process Document')
+            ->icon('ri-ai-generate-2')
+            ->action(function(Get $get, Set $set,$livewire){
+                $file = $get('file_url');
+                $fileUrl = $file[array_key_first($file)];
+                $filePath= 'app/private/livewire-tmp/' . $fileUrl->getFilename();
+                // dd($filePath);
+                try{
+                    $billAiController = new BillAiController();
+                    $document = $billAiController->processDocument($filePath, false);
+                    // dd($document);
+                    $jsonData = json_decode($document->serializeToJsonString(),true)['entities'];
+                    $entities = [];
+                    foreach ($jsonData as $entity) {
+                        if (isset($entity['pageAnchor']['pageRefs'][0]['boundingPoly']['normalizedVertices'])) {
+                            $vertices = $entity['pageAnchor']['pageRefs'][0]['boundingPoly']['normalizedVertices'];
+                            $entities[] = [
+                                'type' => $entity['type'],
+                                'mentionText' => $entity['mentionText'],
+                                'confidence' => $entity['confidence'],
+                                'vertices' => $vertices,
+                            ];
+                        }
+                    }
+            
+                    $parsedImage = new ParsedImage($document);
+                    $dataForFrontend = $parsedImage->toJsonSerializable();
+
+                    
+                    $set('bill_number', $parsedImage->getInvoiceId());
+                    $set('bill_date', $parsedImage->getInvoiceDate());
+                    $set('line_items', $parsedImage->getLineItems());
+                    $set('generated_data',$dataForFrontend);
+                    $set('data_for_img', $dataForFrontend);
+
+
+                    $entities = json_encode($entities);
+                    
+                    
+                }catch(\Exception $e){
+                    dd($e);
+                }
+            });
+        
+
+        
+         }
+         $fields = [
             Forms\Components\Select::make('provider_id')
                 ->required()
                 ->preload()
@@ -65,126 +153,34 @@ class BillResource extends Resource
                 ->required(),
                 Section::make('File Upload')
                 ->schema([
-                Select::make('file_type')
-                ->options([
-                    'pdf' => 'PDF',
-                    'image' => 'Image',
-                ])
-                ->reactive()
-                ->required(),
+                
                 FileUpload::make('file_url')
+                ->hintActions($fileUploadActions)
                 ->storeFiles(true)
                 ->directory('bills')
                 ->visibility('private')
                 ->label('PDF File')
                 ->acceptedFileTypes(['application/pdf'])
                 ->multiple(false)
-                ->openable()
-                ->downloadable()
-                ->hidden(fn (Get $get) => $get('operation') === 'view' || $get('file_type') === 'image' || $get('file_type') === null)
+                ->openable(true)
+                ->downloadable(true)
                 ->columnSpanFull()
                 ->reactive()
                 ->required(),
-                Forms\Components\Hidden::make('file_url'),
+                Forms\Components\Hidden::make('generated_data'),
 
-                FileUpload::make('image_url')
-                ->previewable()
-                ->directory('bills')
-                ->visibility('public')
-                ->label('Image File')
-                ->acceptedFileTypes(['image/*'])
-                ->image()
-                ->multiple(true)
-                ->afterStateUpdated(function(Set $set, Get $get, ?array $state){
-                    /** @var TemporaryUploadedFile[] $tempFiles */
-                    $tempFiles = $state;
-                    $data = [
-                        'title' => 'Welcome to ItSolutionStuff.com',
-                        'date' => date('m/d/Y'),
-                        'images' => $tempFiles
-                    ]; 
-                    
-                          
-                    $pdf = Pdf::loadView('myPDF', $data);
-                    // dd($pdf);
-                    $randomNamedPdf = 'myPDF-' . time() . '.pdf';
-                    $pdf->save(storage_path('app/private/livewire-tmp/' . $randomNamedPdf));
-                    // $pdfUrl = route('temporary-file.serve', ['filename' => 'myPDF.pdf']);
-                    $set('file_url', array($randomNamedPdf));
-                    
-                    
-                   //dd($pdfUrl);
-                })
-                ->hidden(fn (Get $get) => $get('operation') === 'view' || $get('file_type') === 'pdf' || $get('file_type') === null)
-                ->columnSpanFull()
-                ->imageEditor()
-                ->reactive()
-                ->required(), 
-                // action button to generate datas with ai 
-                
-                /* PdfViewerField::make('file_preview')
-                ->reactive()
-                ->visibility('private')
-                ->fileUrl(function($record, Get $get, $operation, $state){
-
-                    if($operation === 'edit'){
-
-                        if($get('file_url') === null || empty($get('file_url'))){
-                            return '';
-                        }
-                        $fileUrls = $get('file_url');
-                        $fileUrl = $fileUrls[array_key_first($fileUrls)];
-                        if($fileUrl !== $record->file_url){
-                          
-                            $tempFile = $fileUrl;
-                            
-                            $temporaryUrl = route('temporary-file.serve', ['filename' => basename($tempFile->getClientOriginalPath())]);
-                            return $temporaryUrl;
-                        }else{
-                            return url('storage/bills/' . basename($record->file_url));
-                        }
-
-                            
-                    }else if ($operation === 'view'){
-                        
-                        return url('storage/bills/' . basename($record->file_url));
-                    }else{
-                        if($get('file_url') === null || empty($get('file_url'))){
-                           return '';
-                        }else{
-
-                           
-                            $file_url_key = array_key_first($get('file_url'));
-                            $file_url = $get('file_url')[$file_url_key];
-                            $temporaryUrl = route('temporary-file.serve', ['filename' => basename($file_url), 'isPrivate' => false]);
-                            // dd($temporaryUrl);
-
-                            $fullPath = storage_path('app/public/' . $file_url);
-                            // dd($fullPath);
-                            // dd($fullPath);
-                            return $temporaryUrl; 
-                    }
-                    }
-
-                })
-
-                ->label('PDF Preview')    
-                
-                ->hidden(function ($operation, Get $get, $record){
-                  
-                    return false;
-                })
-                
-
-            ->columnSpanFull()    
-            ->minHeight('80svh'), */
+               
             
             Section::make('Data from AI')
+            ->hidden(fn (Get $get) => $get('generated_data') === null)
             ->schema([
-        DisplayDocAi::make('data_for_img'),
+                DisplayDocAi::make('data_for_img')
+                
+                ->reactive(),
             ]),
         
             Section::make('Line Items')
+            ->hidden(fn (Get $get) => $get('generated_data') === null)
             ->schema([
             Repeater::make('line_items')
             
@@ -195,41 +191,17 @@ class BillResource extends Resource
                     ->options(Product::all()->pluck('name', 'id'))
                     ->required(),
                 ])
-    ->columns(4)
+                     ->columns(4)
                 ]),])
-        ] ;
+            ] ;
+         return $form->schema($fields);
+         
 
-         if($form->getOperation() === 'view'){
+    
             
-        } 
-        
-         $form
-            ->schema($fields)
-            ;
-
-        
-            return $form;
+       
     }
 
-/*     public static function infolist(Infolist $infolist): Infolist
-{
-    return $infolist
-        ->schema([
-            // for provider name
-            TextEntry::make('provider.name')
-                ->label('Provider Name'),
-            // for bill number
-            TextEntry::make('bill_number')
-                ->label('Bill Number'),
-            // for bill date
-            TextEntry::make('bill_date')
-                ->label('Bill Date'),
-            // for pdf viewer
-            PdfViewerEntry::make('file_url')
-                ->label('View the PDF')
-                ->minHeight('40svh')
-        ]);
-} */
 
     public static function table(Table $table): Table
     {
@@ -298,6 +270,33 @@ class BillResource extends Resource
         }
         return $images;
     }
+
+
+    protected function extractDataFromDocument($fileUrl, $provider_id){
+        try{
+        $billAiController = new BillAiController();
+        $document = $billAiController->processDocument($fileUrl, false);
+        $jsonData = json_decode($document->serializeToJsonString(),true)['entities'];
+        $entities = [];
+        foreach ($jsonData as $entity) {
+            if (isset($entity['pageAnchor']['pageRefs'][0]['boundingPoly']['normalizedVertices'])) {
+                $vertices = $entity['pageAnchor']['pageRefs'][0]['boundingPoly']['normalizedVertices'];
+                $entities[] = [
+                    'type' => $entity['type'],
+                    'mentionText' => $entity['mentionText'],
+                    'confidence' => $entity['confidence'],
+                    'vertices' => $vertices,
+                ];
+            }
+        }
+
+        $parsedImage = new ParsedImage($document);
+        $dataForFrontend = $parsedImage->toJsonSerializable();
+        return $dataForFrontend;
+    }catch(\Exception $e){
+        dd($e);
+    }
+}
 
     
 }

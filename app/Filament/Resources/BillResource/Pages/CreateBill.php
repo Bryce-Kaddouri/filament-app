@@ -52,6 +52,7 @@ protected function handleRecordCreation(array $data): Model
 
 public function mount(): void
     {
+       /*  if(isset(request()->file_url)){
         $fileUrl = request()->file_url;
         $provider_id = request()->provider_id;
         $billAiController = new BillAiController();
@@ -70,11 +71,8 @@ public function mount(): void
             }
         }
 
-      
-
-
-$parsedImage = new ParsedImage($document);
-$dataForFrontend = $parsedImage->toJsonSerializable();
+        $parsedImage = new ParsedImage($document);
+        $dataForFrontend = $parsedImage->toJsonSerializable();
 
 
 
@@ -91,13 +89,13 @@ $dataForFrontend = $parsedImage->toJsonSerializable();
             'doc' => $document->serializeToJsonString(),
             'provider_id' => $provider_id,
             'file_type' => 'pdf',
-            'bill_number' => '1',
+            'bill_number' => $parsedImage->getInvoiceId(),
             'file_url' => $fileUrl,
-            'bill_date' => $parsedImage->getInvoiceDate(),
-            'invoice_id' => $parsedImage->getInvoiceId(),
+            'bill_date' => $this->parseDate($parsedImage->getInvoiceDate()),
             'line_items' => $parsedImage->getLineItems(),
            
         ]);
+    } */
     }
 
     private function parseDate(string $dateString): ?\Carbon\Carbon

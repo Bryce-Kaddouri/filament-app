@@ -38,7 +38,7 @@ class BillAiController extends Controller
             'apiEndpoint' => 'eu-documentai.googleapis.com',
         ];
         $client = new DocumentProcessorServiceClient($clientOptions);
-        $fullPath = storage_path('app/public/' . $filePath);
+        $fullPath = storage_path(/* 'app/public/' . */ $filePath);
         $fileExist = file_exists($fullPath);
         if(!$fileExist){
             throw new \RuntimeException('File not found at: ' . $fullPath);
