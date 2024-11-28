@@ -37,7 +37,7 @@ class CreateBill extends CreateRecord
 protected function handleRecordCreation(array $data): Model
 {
     
-    // dd($data);
+   //  dd($data);
 
    
     /* if($isExist){
@@ -45,58 +45,17 @@ protected function handleRecordCreation(array $data): Model
         $newUrl = url('bills/' . basename($fileUrl));
         $data['file_url'] = $newUrl;
     } */
-    return static::getModel()::create($data);
+    return static::getModel()::create([
+        'provider_id' => $data['provider_id'],
+        'bill_number' => $data['bill_number'],
+        'bill_date' => $data['bill_date'],
+        'file_url' => $data['file_url'],
+        'file_type' => 'pdf',
+        'json_document' =>$data['json_document'],
+    ]);
 }
 
 // fill form 
-
-public function mount(): void
-    {
-       /*  if(isset(request()->file_url)){
-        $fileUrl = request()->file_url;
-        $provider_id = request()->provider_id;
-        $billAiController = new BillAiController();
-        $document = $billAiController->processDocument($fileUrl, false);
-        $jsonData = json_decode($document->serializeToJsonString(),true)['entities'];
-        $entities = [];
-        foreach ($jsonData as $entity) {
-            if (isset($entity['pageAnchor']['pageRefs'][0]['boundingPoly']['normalizedVertices'])) {
-                $vertices = $entity['pageAnchor']['pageRefs'][0]['boundingPoly']['normalizedVertices'];
-                $entities[] = [
-                    'type' => $entity['type'],
-                    'mentionText' => $entity['mentionText'],
-                    'confidence' => $entity['confidence'],
-                    'vertices' => $vertices,
-                ];
-            }
-        }
-
-        $parsedImage = new ParsedImage($document);
-        $dataForFrontend = $parsedImage->toJsonSerializable();
-
-
-
-
-
-
-
-
-  
-
-        
-        $this->form->fill([
-            'data_for_img' => $dataForFrontend,
-            'doc' => $document->serializeToJsonString(),
-            'provider_id' => $provider_id,
-            'file_type' => 'pdf',
-            'bill_number' => $parsedImage->getInvoiceId(),
-            'file_url' => $fileUrl,
-            'bill_date' => $this->parseDate($parsedImage->getInvoiceDate()),
-            'line_items' => $parsedImage->getLineItems(),
-           
-        ]);
-    } */
-    }
 
     private function parseDate(string $dateString): ?\Carbon\Carbon
     {

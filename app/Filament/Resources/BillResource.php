@@ -11,6 +11,7 @@ use App\Forms\Components\ImageAiField;
 use App\Http\Controllers\BillAiController;
 use App\Models\Bill;
 use App\Models\Product;
+use App\Models\Provider;
 use App\Services\ParsedImage;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Forms;
@@ -99,6 +100,7 @@ class BillResource extends Resource
                 try{
                     $billAiController = new BillAiController();
                     $document = $billAiController->processDocument($filePath, false);
+                    $set('json_document', $document->serializeToJsonString());
                     // dd($document);
                     $jsonData = json_decode($document->serializeToJsonString(),true)['entities'];
                     $entities = [];
@@ -131,19 +133,23 @@ class BillResource extends Resource
                 }catch(\Exception $e){
                     dd($e);
                 }
-            });
+            })
+            /* ->modalHeading('Confirm Processing Document')
+            ->modalIcon('heroicon-o-document')
+            // ->modalContent(fn () => view('modals.confirm-processing', ['message' => 'Are you sure you want to process the document?']))
+            ->requiresConfirmation() */;
         
 
         
          }
          $fields = [
             Forms\Components\Select::make('provider_id')
-                ->required()
                 ->preload()
                 ->searchable()
                 ->native(false)
-                
-                ->relationship('provider', 'name'),
+                ->reactive()
+                ->relationship(name: 'provider', titleAttribute: 'name')
+                ->required(),
             Forms\Components\TextInput::make('bill_number')
                 ->required()
                 ->maxLength(255),
@@ -168,6 +174,8 @@ class BillResource extends Resource
                 ->reactive()
                 ->required(),
                 Forms\Components\Hidden::make('generated_data'),
+                Forms\Components\Hidden::make('json_document'),
+
 
                
             
@@ -188,10 +196,12 @@ class BillResource extends Resource
                     TextInput::make('quantity')->required(),
                     TextInput::make('unit_price')->required(),
                     Select::make('product')
+                    ->searchable()
+                    ->native(false)
                     ->options(Product::all()->pluck('name', 'id'))
                     ->required(),
                 ])
-                     ->columns(4)
+                     ->columns(3)
                 ]),])
             ] ;
          return $form->schema($fields);

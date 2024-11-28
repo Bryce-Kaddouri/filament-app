@@ -21,6 +21,7 @@ class Bill extends Model
         'bill_date',
         'file_url',
         'file_type',
+        'json_document'
     ];
 
     // cast file_url to array
