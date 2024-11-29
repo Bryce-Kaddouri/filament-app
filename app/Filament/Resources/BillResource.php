@@ -100,7 +100,8 @@ class BillResource extends Resource
                 try{
                     $billAiController = new BillAiController();
                     $document = $billAiController->processDocument($filePath, false);
-                    $set('json_document', $document->serializeToJsonString());
+                    $jsonDocument = $document->serializeToJsonString();
+                    $set('json_document', $jsonDocument);
                     // dd($document);
                     $jsonData = json_decode($document->serializeToJsonString(),true)['entities'];
                     $entities = [];
@@ -116,7 +117,7 @@ class BillResource extends Resource
                         }
                     }
             
-                    $parsedImage = new ParsedImage($document);
+                    $parsedImage = ParsedImage::fromJson($jsonDocument);
                     $dataForFrontend = $parsedImage->toJsonSerializable();
 
                     
@@ -300,7 +301,7 @@ class BillResource extends Resource
             }
         }
 
-        $parsedImage = new ParsedImage($document);
+        $parsedImage = ParsedImage::fromJson($document->serializeToJsonString());
         $dataForFrontend = $parsedImage->toJsonSerializable();
         return $dataForFrontend;
     }catch(\Exception $e){

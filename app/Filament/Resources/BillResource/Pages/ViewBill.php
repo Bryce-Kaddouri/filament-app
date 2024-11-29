@@ -20,14 +20,23 @@ class ViewBill extends ViewRecord
         $this->authorizeAccess();
 
         $documentJson = Storage::get('bills/' . $this->record->id . '/json_document.json');
-        dd(json_decode($documentJson, true)   );
+        //dd(json_decode($documentJson, true)   );
         $parsedImage = ParsedImage::fromJson($documentJson);
-        dd($parsedImage);
+        $dataForFrontend = $parsedImage->toJsonSerializable();
+       //  dd($parsedImage);
 
         if (! $this->hasInfolist()) {
-            $this->fillForm();
             $this->form->fill(
-                ['']
+                [
+                    'provider_id' => $this->record->provider_id,
+                    'bill_number' => $this->record->bill_number,
+                    'bill_date' => $this->record->bill_date,
+                    'file_url' => $this->record->file_url,
+                    'json_document' => $documentJson,
+                    'line_items' => $parsedImage->getLineItems(),
+                    'generated_data' => $dataForFrontend,
+                    'data_for_img' => $dataForFrontend
+                ]
             );
         }
     }

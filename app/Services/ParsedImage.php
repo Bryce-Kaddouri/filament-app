@@ -21,15 +21,18 @@ class ParsedImage
 
     private $lineItems;
 
-    public function __construct(Document $document)
+    public function __construct(string $jsonDocument)
     {
+        $document = new Document();
+        $document->mergeFromJsonString($jsonDocument);
+        // dd($document);
         $this->types = [
             0 => 'invoice_date',
             1 => 'invoice_id',
             2 => 'line_item',
             3 => 'supplier_name'
         ];
-        
+
         $this->imageWidth = $document->getPages()[0]->getDimension()->getWidth();
         $this->imageHeight = $document->getPages()[0]->getDimension()->getHeight();
 
@@ -183,11 +186,8 @@ class ParsedImage
     // static function from json
     public static function fromJson(string $json): ParsedImage
     {
-        $jsonDecoded = json_decode($json, true);
         // array{chunked_document: ChunkedDocument, content: string, document_layout: DocumentLayout, entities: Entity[]|RepeatedField, entity_relations: EntityRelation[]|RepeatedField, error: Status, mime_type: string, pages: Page[]|RepeatedField, revisions: RepeatedField|Revision[], shard_info: ShardInfo, text: string, text_changes: RepeatedField|TextChange[], text_styles: RepeatedField|Style[], uri: string} $data = NULL
-
-        $document = new Document();
-        $document->mergeFromJsonString($json);
-        return new ParsedImage($document);
+        
+        return new ParsedImage($json);
     }
 }
