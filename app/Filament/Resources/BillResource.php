@@ -53,6 +53,8 @@ class BillResource extends Resource
     public static function form(Form $form): Form
     {
         $hideDataAI = true;
+        $operation = $form->getOperation();
+        // dd($operation);
 
         $fileUploadActions = [
                
@@ -75,8 +77,11 @@ class BillResource extends Resource
                 
                 ->required(),
                 Section::make('File Upload')
-                ->headerActions([
+                ->headerActions(
+                    $operation == 'create' || $operation == 'edit' ?
+                    [
                     Action::make('process_document')
+                    
             
             
             ->label('Process Document')
@@ -135,7 +140,7 @@ class BillResource extends Resource
                 }
                 
             })
-                ])
+                ] : [])
                 ->schema([
                 
                 FileUpload::make('file_url')
