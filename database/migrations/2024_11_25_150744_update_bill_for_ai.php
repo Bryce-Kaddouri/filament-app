@@ -13,7 +13,7 @@ return new class extends Migration
     {
         // add field json_document
         Schema::table('bills', function (Blueprint $table) {
-            $table->json('json_document')->nullable();
+            $table->string('json_document')->nullable();
         });
     }
 

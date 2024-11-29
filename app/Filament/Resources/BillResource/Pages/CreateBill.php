@@ -20,6 +20,7 @@ use Google\Protobuf\Internal\RepeatedField;
 use Carbon\Exceptions\InvalidFormatException;
 use Imagick;
 use App\Services\ParsedImage;
+use Illuminate\Support\Facades\Storage;
 
 class CreateBill extends CreateRecord
 {
@@ -45,14 +46,27 @@ protected function handleRecordCreation(array $data): Model
         $newUrl = url('bills/' . basename($fileUrl));
         $data['file_url'] = $newUrl;
     } */
-    return static::getModel()::create([
+   
+    $product = static::getModel()::create([
         'provider_id' => $data['provider_id'],
         'bill_number' => $data['bill_number'],
         'bill_date' => $data['bill_date'],
         'file_url' => $data['file_url'],
         'file_type' => 'pdf',
-        'json_document' =>$data['json_document'],
+        'json_document' =>null,
     ]);
+    // write json document to file
+    $jsonDocument = $data['json_document'];
+    
+    Storage::put('bills/' . $product->id . '/json_document.json', $jsonDocument,  'private');
+    $url = 'bills/' . $product->id . '/json_document.json';
+    $product->json_document = $url;
+    $product->save();
+    return $product;
+
+
+    
+    
 }
 
 // fill form 
