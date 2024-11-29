@@ -28,6 +28,7 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Support\RawJs;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Hugomyb\FilamentMediaAction\Forms\Components\Actions\MediaAction as FormMediaAction;
@@ -51,13 +52,98 @@ class BillResource extends Resource
 
     public static function form(Form $form): Form
     {
+        $hideDataAI = true;
 
         $fileUploadActions = [
                
             
         ];
+        $fields = [];
+        $fields = [
+            Forms\Components\Select::make('provider_id')
+                ->preload()
+                ->searchable()
+                ->native(false)
+                ->reactive()
+                ->relationship(name: 'provider', titleAttribute: 'name')
+                ->required(),
+            Forms\Components\TextInput::make('bill_number')
+                ->required()
+                ->maxLength(255),
+                Forms\Components\DatePicker::make('bill_date')
+                ->native(false)
+                
+                ->required(),
+                Section::make('File Upload')
+                ->schema([
+                
+                FileUpload::make('file_url')
+                ->disabled(function($operation){
+                    return $operation == 'edit';
+                })
+                ->hintActions($fileUploadActions)
+                ->storeFiles(true)
+                ->directory('bills')
+                ->visibility('private')
+                ->label('PDF File')
+                ->acceptedFileTypes(['application/pdf'])
+                ->multiple(false)
+                ->openable(true)
+                ->downloadable(true)
+                ->columnSpanFull()
+                ->reactive()
+                ->required(),
+            ]),
+                Forms\Components\Hidden::make('generated_data'),
+                Forms\Components\Hidden::make('json_document'),
+
+
+               
+            
+            Section::make('Data from AI')
+            
+            ->id('data-from-ai')
+            ->schema([
+                DisplayDocAi::make('data_for_img')
+                ->reactive(),
+            ]),
+        
+            Section::make('Line Items')
+            ->hidden(/* fn (Get $get) => $get('generated_data') === null */ false)
+            ->schema([
+            Repeater::make('all_line_items')
+                // ->relationship('line_items')
+            
+                ->schema([
+                    TextInput::make('quantity')
+                    ->minValue(0)
+                    ->inputMode('decimal')
+                    
+                    ->required(),
+                    TextInput::make(name: 'unit_price')
+                ->inputMode('decimal')
+                // ->numeric()
+                ->required()
+                ->minValue(0)
+                ->prefix('€'),
+                    Select::make('product_id')
+                    ->searchable()
+                    ->native(false)
+                    ->options(Product::all()->pluck('name', 'id'))
+                    ->required(),
+                ])
+                     ->columns(3)
+                ]),
+            ] ;
 
          if(isset($form->getRawState()['file_url'])){
+            if($form->getRawState()['file_url'] == null){
+                // remove where id - data-from-ai
+                $hideDataAI = false;
+                // dd($fields);
+            }else{
+                $hideDataAI = false;
+            }
             $fileUploadActions[] = FormMediaAction::make('file_url')
             ->label('View PDF')
             ->media(function($state){
@@ -123,7 +209,7 @@ class BillResource extends Resource
                     
                     $set('bill_number', $parsedImage->getInvoiceId());
                     $set('bill_date', $parsedImage->getInvoiceDate());
-                    $set('line_items', $parsedImage->getLineItems());
+                    $set('all_line_items', $parsedImage->getLineItems());
                     $set('generated_data',$dataForFrontend);
                     $set('data_for_img', $dataForFrontend);
 
@@ -143,68 +229,7 @@ class BillResource extends Resource
 
         
          }
-         $fields = [
-            Forms\Components\Select::make('provider_id')
-                ->preload()
-                ->searchable()
-                ->native(false)
-                ->reactive()
-                ->relationship(name: 'provider', titleAttribute: 'name')
-                ->required(),
-            Forms\Components\TextInput::make('bill_number')
-                ->required()
-                ->maxLength(255),
-                Forms\Components\DatePicker::make('bill_date')
-                ->native(false)
-                
-                ->required(),
-                Section::make('File Upload')
-                ->schema([
-                
-                FileUpload::make('file_url')
-                ->hintActions($fileUploadActions)
-                ->storeFiles(true)
-                ->directory('bills')
-                ->visibility('private')
-                ->label('PDF File')
-                ->acceptedFileTypes(['application/pdf'])
-                ->multiple(false)
-                ->openable(true)
-                ->downloadable(true)
-                ->columnSpanFull()
-                ->reactive()
-                ->required(),
-                Forms\Components\Hidden::make('generated_data'),
-                Forms\Components\Hidden::make('json_document'),
-
-
-               
-            
-            Section::make('Data from AI')
-            ->hidden(fn (Get $get) => $get('generated_data') === null)
-            ->schema([
-                DisplayDocAi::make('data_for_img')
-                
-                ->reactive(),
-            ]),
-        
-            Section::make('Line Items')
-            ->hidden(fn (Get $get) => $get('generated_data') === null)
-            ->schema([
-            Repeater::make('line_items')
-            
-                ->schema([
-                    TextInput::make('quantity')->required(),
-                    TextInput::make('unit_price')->required(),
-                    Select::make('product')
-                    ->searchable()
-                    ->native(false)
-                    ->options(Product::all()->pluck('name', 'id'))
-                    ->required(),
-                ])
-                     ->columns(3)
-                ]),])
-            ] ;
+         
          return $form->schema($fields);
          
 

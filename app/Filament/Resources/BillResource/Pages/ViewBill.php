@@ -35,7 +35,8 @@ class ViewBill extends ViewRecord
                     'json_document' => $documentJson,
                     'line_items' => $parsedImage->getLineItems(),
                     'generated_data' => $dataForFrontend,
-                    'data_for_img' => $dataForFrontend
+                    'data_for_img' => $dataForFrontend,
+                    'all_line_items' => $this->record->line_items,
                 ]
             );
         }

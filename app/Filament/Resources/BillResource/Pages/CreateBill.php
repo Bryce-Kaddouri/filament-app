@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use App\Filament\Resources\BillResource;
 use App\Http\Controllers\BillAiController;
+use App\Models\LineItem;
 use App\Models\Provider;
 use Carbon\Carbon;
 use Filament\Actions;
@@ -38,7 +39,7 @@ class CreateBill extends CreateRecord
 protected function handleRecordCreation(array $data): Model
 {
     
-   //  dd($data);
+   // dd($data);
 
    
     /* if($isExist){
@@ -46,8 +47,10 @@ protected function handleRecordCreation(array $data): Model
         $newUrl = url('bills/' . basename($fileUrl));
         $data['file_url'] = $newUrl;
     } */
+
+
    
-    $product = static::getModel()::create([
+    $bill = static::getModel()::create([
         'provider_id' => $data['provider_id'],
         'bill_number' => $data['bill_number'],
         'bill_date' => $data['bill_date'],
@@ -58,11 +61,23 @@ protected function handleRecordCreation(array $data): Model
     // write json document to file
     $jsonDocument = $data['json_document'];
     
-    Storage::put('bills/' . $product->id . '/json_document.json', $jsonDocument,  'private');
-    $url = 'bills/' . $product->id . '/json_document.json';
-    $product->json_document = $url;
-    $product->save();
-    return $product;
+    Storage::put('bills/' . $bill->id . '/json_document.json', $jsonDocument,  'private');
+    $url = 'bills/' . $bill->id . '/json_document.json';
+    $bill->json_document = $url;
+    $bill->save();
+
+    // create line items
+    foreach ($data['all_line_items'] as $lineItem) {
+        // dd($lineItem);
+        LineItem::create([
+            'bill_id' => $bill->id,
+            'provider_id' => $data['provider_id'],
+            'quantity' => (float) $lineItem['quantity'],
+            'unit_price' => (float) $lineItem['unit_price'],
+            'product_id' => $lineItem['product_id'],
+        ]);
+    }
+    return $bill;
 
 
     

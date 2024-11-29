@@ -90,7 +90,7 @@ class ParsedImage
 
                                 // dd($product);
 
-                                $item['product'] = $product ? $product->id : null;
+                                $item['product_id'] = $product ? $product->id : null;
                             }
                         
                     }

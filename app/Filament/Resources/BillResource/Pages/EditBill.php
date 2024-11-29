@@ -3,10 +3,12 @@
 namespace App\Filament\Resources\BillResource\Pages;
 
 use App\Filament\Resources\BillResource;
+use App\Models\LineItem;
 use App\Services\ParsedImage;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class EditBill extends EditRecord
@@ -22,8 +24,15 @@ class EditBill extends EditRecord
 
     public function handleRecordUpdate(Model $record, array $data): Model
     {
-        dd($data);
+        // dd($data);
         $record->update($data);
+        LineItem::where('bill_id', $record->id)->delete();
+        foreach ($data['all_line_items'] as $lineItem) {
+            LineItem::create([
+                'bill_id' => $record->id,
+                'product_id' => $lineItem['product_id'],
+            ]);
+        }
         return $record;
     }
 
@@ -33,6 +42,7 @@ class EditBill extends EditRecord
         $this->record = $this->resolveRecord($record);
 
         $this->authorizeAccess();
+        Log::info($this->record);
 
         $documentJson = Storage::get('bills/' . $this->record->id . '/json_document.json');
         //dd(json_decode($documentJson, true)   );
@@ -49,7 +59,8 @@ class EditBill extends EditRecord
                     'json_document' => $documentJson,
                     'line_items' => $parsedImage->getLineItems(),
                     'generated_data' => $dataForFrontend,
-                    'data_for_img' => $dataForFrontend
+                    'data_for_img' => $dataForFrontend,
+                    'all_line_items' => $this->record->line_items,
                 ]
             );
         

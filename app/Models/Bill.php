@@ -15,13 +15,19 @@ class Bill extends Model
         return $this->belongsTo(Provider::class);
     }
 
+    public function line_items()
+    {
+        return $this->hasMany(LineItem::class);
+    }
+
     protected $fillable = [
         'provider_id',
         'bill_number',
         'bill_date',
         'file_url',
         'file_type',
-        'json_document'
+        'json_document',
+        'line_items'
     ];
 
     // cast file_url to array
