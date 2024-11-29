@@ -75,6 +75,67 @@ class BillResource extends Resource
                 
                 ->required(),
                 Section::make('File Upload')
+                ->headerActions([
+                    Action::make('process_document')
+            
+            
+            ->label('Process Document')
+            ->icon('ri-ai-generate-2')
+            ->action(function(Get $get, Set $set,$operation){
+
+                
+
+                $file = $get('file_url');
+                
+                $fileUrl = $file[array_key_first($file)];
+
+                if($operation == 'create'){
+
+                $filePath= 'app/private/livewire-tmp/' . $fileUrl->getFilename();
+                }else{
+                    $filePath = 'app/private/' . $fileUrl;
+                }
+                // dd($filePath);
+                try{
+                    $billAiController = new BillAiController();
+                    $document = $billAiController->processDocument($filePath, false);
+                    $jsonDocument = $document->serializeToJsonString();
+                    $set('json_document', $jsonDocument);
+                    // dd($document);
+                    $jsonData = json_decode($document->serializeToJsonString(),true)['entities'];
+                    $entities = [];
+                    foreach ($jsonData as $entity) {
+                        if (isset($entity['pageAnchor']['pageRefs'][0]['boundingPoly']['normalizedVertices'])) {
+                            $vertices = $entity['pageAnchor']['pageRefs'][0]['boundingPoly']['normalizedVertices'];
+                            $entities[] = [
+                                'type' => $entity['type'],
+                                'mentionText' => $entity['mentionText'],
+                                'confidence' => $entity['confidence'],
+                                'vertices' => $vertices,
+                            ];
+                        }
+                    }
+            
+                    $parsedImage = ParsedImage::fromJson($jsonDocument);
+                    $dataForFrontend = $parsedImage->toJsonSerializable();
+
+                    
+                    $set('bill_number', $parsedImage->getInvoiceId());
+                    $set('bill_date', $parsedImage->getInvoiceDate());
+                    $set('all_line_items', $parsedImage->getLineItems());
+                    $set('generated_data',$dataForFrontend);
+                    $set('data_for_img', $dataForFrontend);
+
+
+                    $entities = json_encode($entities);
+                    
+                    
+                }catch(\Exception $e){
+                    dd($e);
+                }
+                
+            })
+                ])
                 ->schema([
                 
                 FileUpload::make('file_url')
@@ -82,7 +143,7 @@ class BillResource extends Resource
                     return $operation == 'edit';
                 })
                 ->hintActions($fileUploadActions)
-                ->storeFiles(true)
+                // ->storeFiles(true)
                 ->directory('bills')
                 ->visibility('private')
                 ->label('PDF File')
@@ -101,6 +162,9 @@ class BillResource extends Resource
                
             
             Section::make('Data from AI')
+            ->hidden(function($state){
+                return $state['generated_data'] == null;
+            })
             
             ->id('data-from-ai')
             ->schema([
@@ -109,7 +173,9 @@ class BillResource extends Resource
             ]),
         
             Section::make('Line Items')
-            ->hidden(/* fn (Get $get) => $get('generated_data') === null */ false)
+            ->hidden(function($state){
+                return $state['all_line_items'] == null;
+            })
             ->schema([
             Repeater::make('all_line_items')
                 // ->relationship('line_items')

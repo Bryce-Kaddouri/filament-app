@@ -48,6 +48,8 @@ protected function handleRecordCreation(array $data): Model
         $data['file_url'] = $newUrl;
     } */
 
+   
+
 
    
     $bill = static::getModel()::create([
@@ -58,12 +60,39 @@ protected function handleRecordCreation(array $data): Model
         'file_type' => 'pdf',
         'json_document' =>null,
     ]);
+
+    $bill_id = $bill->id;
+    // move file to private folder bill/bill_id/
+    $file = $data['file_url'];
+    
+    $filePath= 'app/private/bills/' . $bill_id . '/';
+    $fileName = basename($bill->file_url);
+    // dd($fileName);
+    $from = $bill->file_url;
+    $to = 'bills/' . $bill_id . '/' . $fileName;
+
+    $fromPath = storage_path('app/public/' . $from);
+    $toPath = storage_path('app/private/' . $to);
+    // dd($fromPath);
+    // if $from file exist move it to $to
+    if(file_exists($fromPath)){
+        // dd('file exist');
+        mkdir(dirname($toPath), 0777, true);
+        $sucessMoved = copy($fromPath, $toPath);
+        if(!$sucessMoved){
+            throw new \Exception('File not moved');
+        }
+    }else{
+        dd('file not exist');
+    }
     // write json document to file
     $jsonDocument = $data['json_document'];
     
     Storage::put('bills/' . $bill->id . '/json_document.json', $jsonDocument,  'private');
     $url = 'bills/' . $bill->id . '/json_document.json';
     $bill->json_document = $url;
+    // $bill->file_url = 'bills/' . $bill_id . '/' . $fileName;
+
     $bill->save();
 
     // create line items

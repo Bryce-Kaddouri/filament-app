@@ -25,12 +25,19 @@ class EditBill extends EditRecord
     public function handleRecordUpdate(Model $record, array $data): Model
     {
         // dd($data);
+        // remove the file_url from the data
+        unset($data['file_url']);
+        // remove json_document from the data
+        unset($data['json_document']);
         $record->update($data);
         LineItem::where('bill_id', $record->id)->delete();
         foreach ($data['all_line_items'] as $lineItem) {
             LineItem::create([
                 'bill_id' => $record->id,
                 'product_id' => $lineItem['product_id'],
+                'quantity' => $lineItem['quantity'],
+                'provider_id' => $record->provider_id,
+                'unit_price' => $lineItem['unit_price'],
             ]);
         }
         return $record;
