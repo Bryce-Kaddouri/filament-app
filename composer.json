@@ -18,6 +18,7 @@
         "filament/filament": "^3.2",
         "flowframe/laravel-trend": "^0.3.0",
         "google/cloud": "^0.268.0",
+        "google/cloud-billing": "*",
         "google/cloud-document-ai": "*",
         "hugomyb/filament-media-action": "^3.1",
         "joaopaulolndev/filament-edit-profile": "^1.0",
