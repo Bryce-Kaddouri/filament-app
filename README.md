@@ -72,3 +72,13 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 php artisan make:filament-resource Price --generate --view --model
 
 need to create model first like this is going to create the generated resource based on the model
+
+
+
+
+
+google cloud api :
+
+- budget : https://github.com/googleapis/google-cloud-php-billing-budgets/tree/main/samples/V1/BudgetServiceClient
+
+- billing : https://github.com/googleapis/google-cloud-php-billing/tree/main/samples
