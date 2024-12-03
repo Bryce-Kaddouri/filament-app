@@ -1,6 +1,9 @@
 <?php
 
 namespace App\Filament\Widgets;
+
+use App\Models\Bill;
+use App\Models\LineItem;
 use Filament\Support\RawJs;
 
 use App\Models\Price;
@@ -22,55 +25,60 @@ class ProviderLineChart extends ChartWidget
 
         $activeFilter = $this->filter;
 
-        $providers = Provider::with('prices')->get();
+        $providers = Provider::all();
         $chartData = [
             
         ];
 
         foreach ($providers as $provider) {
+            
             if($activeFilter == 'week'){
                 $trend = Trend::query(
-                    Price::query()
-                        ->where('provider_id', $provider->id)
+                    LineItem::query()
+                    ->join('bills', 'line_items.bill_id', '=', 'bills.id')
+                    ->where('bills.provider_id', '=', $provider->id)
                     )
                     
                     ->interval($activeFilter)
-                    ->dateColumn('effective_date')
+                    ->dateColumn('bills.bill_date')
                     ->between(
                         start: now()->startOfYear(),
                         end: now()->endOfYear(),
                     )
                     ->perWeek()
-                    ->average('price');
+                    ->average('line_items.unit_price');
             }
             if($activeFilter == 'year'){
                 $trend = Trend::query(
-                    Price::query()
-                        ->where('provider_id', $provider->id)
+                    LineItem::query()
+                        ->join('bills', 'line_items.bill_id', '=', 'bills.id')
+                        ->where('bills.provider_id', '=', $provider->id)
                     )
                     
                     ->interval($activeFilter)
-                    ->dateColumn('effective_date')
+                    ->dateColumn('bills.bill_date')
                     ->between(
                         start: now()->startOfYear(),
                         end: now()->endOfYear(),
                     )
                     ->perYear()
-                    ->average('price');
+                    ->average('line_items.unit_price');
             }else{
-            $trend = Trend::query(
-            Price::query()
-                ->where('provider_id', $provider->id)
-            )
-            
-            ->interval($activeFilter)
-            ->dateColumn('effective_date')
-            ->between(
-                start: now()->startOfYear(),
-                end: now()->endOfYear(),
-            )
-            ->perMonth()
-            ->average('price');
+                
+                
+                $trend = Trend::query(
+                    LineItem::query()
+                        ->join('bills', 'line_items.bill_id', '=', 'bills.id')
+                        ->where('bills.provider_id', '=', $provider->id)
+                )
+                ->interval($activeFilter)
+                ->dateColumn('bills.bill_date')
+                ->between(
+                    start: now()->startOfYear(),
+                    end: now()->endOfYear(),
+                )
+                ->perMonth()
+                ->average('line_items.unit_price');
         }
            
            

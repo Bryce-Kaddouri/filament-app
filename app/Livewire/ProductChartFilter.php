@@ -68,7 +68,16 @@ class ProductChartFilter extends Widget implements HasForms
                 ->searchable()
                 ->placeholder('Select a provider')
                 ->multiple()
-                ->relationship('provider', 'name', function ($query, $get) {
+                ->options(
+                    
+                    function ($get) {
+                        // dd($get('product'));
+                        return Provider::with('products_code_by_provider')->whereHas('products_code_by_provider', function ($query) use ($get) {
+                            $query->where('product_id', $get('product'));
+                        })->pluck('name', 'id');
+                    }
+                    )
+                /* ->relationship('products_code_by_provider', 'provider_id', function ($query, $get) {
                     // Filter providers based on selected product_id
                     if ($get('product')) {
                         return $query->whereHas('products', function ($query) use ($get) {
@@ -76,7 +85,7 @@ class ProductChartFilter extends Widget implements HasForms
                         });
                     }
                     return $query;
-                })
+                }) */
                
                 ->preload()
                 ->required()

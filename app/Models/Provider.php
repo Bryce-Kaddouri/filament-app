@@ -17,6 +17,16 @@ class Provider extends Model
         return $this->belongsToMany(Product::class)->withTimestamps();
     }
 
+    public function bills()
+    {
+        return $this->hasMany(Bill::class);
+    }
+
+    public function products_code_by_provider()
+    {
+        return $this->hasMany(ProductCodeByProvider::class);
+    }
+
     public function prices()
     {
         return $this->hasMany(Price::class);
