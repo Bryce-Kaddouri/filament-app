@@ -5,7 +5,7 @@ use App\Http\Controllers\GoogleBillController;
 use App\Http\Controllers\PdfController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TemporaryFileController;
-
+use App\Http\Controllers\VerificationController;
 /* Route::get('/', function () {
     return view('welcome');
 });
@@ -18,5 +18,9 @@ Route::get('/bill-ai', [BillAiController::class, 'index'])
 
 Route::get('/google-bill', [GoogleBillController::class, 'listBillAccount'])
        ->name('google-bill.list');
+
+Route::get('/verify', [VerificationController::class, 'verify'])
+       ->name('verify')
+       ->middleware('auth');
 
 
