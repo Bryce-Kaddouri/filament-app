@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bill;
+use App\Models\Configuration;
+use App\Models\GoogleUsage;
 use Illuminate\Http\Request;
 use Google\Cloud\Core\ServiceBuilder;
 use GPBMetadata\Google\Appengine\V1\Application;
@@ -21,7 +23,8 @@ class BillAiController extends Controller
     public function processDocument(string $filePath, bool $isPrivate = false): Document
 {
     // Set the path to your service account key
-    $credentialsPath = base_path('google_credential.json');
+    $configuration = Configuration::find(1);
+    $credentialsPath = storage_path('app/private/google-credential-key/key.json');
 
     // Check if the credentials file exists
     if (!file_exists($credentialsPath)) {
@@ -72,6 +75,11 @@ class BillAiController extends Controller
 
         // Process the document
         $response = $client->processDocument($request);
+        GoogleUsage::create([
+            'configuration_id' => $configuration->id,
+            'service_name' => 'DocumentAI',
+            'date' => now(),
+        ]);
         $invoice_id = null;
         $invoice_date = null;
         $lines_items_with_qty = [];

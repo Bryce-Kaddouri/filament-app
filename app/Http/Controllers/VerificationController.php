@@ -23,6 +23,8 @@ use Google\ApiCore\OperationResponse;
 use Google\Cloud\Iam\V2\CreatePolicyRequest;
 use Google\Cloud\Iam\V2\Policy;
 use Google\Rpc\Status;
+use Illuminate\Support\Facades\Artisan;
+
 class VerificationController extends Controller
 {
     public function verify(): bool
@@ -77,6 +79,29 @@ class VerificationController extends Controller
     }
 }
     public function listProcessors(){
+
+        try{
+            // setup env for credentials
+            $configuration = Configuration::first();
+            $credentialsPath = storage_path('app/private/' . $configuration->key_path);
+            putenv("GOOGLE_APPLICATION_CREDENTIALS={$credentialsPath}");
+            $json = json_decode(file_get_contents($credentialsPath), true);
+
+            $projectId = $json['project_id'];
+            $serviceAccountEmail = $json['client_email'];
+
+            $gcloudController = new GcloudController();
+            $output = $gcloudController->listRolesServiceAccount($serviceAccountEmail, $projectId);
+            $roles = json_decode($output, true);
+            $requiredRoles = ['roles/documentai.apiUser'];
+            $arrayRoles = array_map(function($role) {
+                return $role['bindings']['role'];
+            }, $roles);
+            // save into json 
+            dd($arrayRoles);
+        }catch(\Exception $e){
+            dd($e);
+        }
         $configuration = Configuration::first();
         $credentialsPath = storage_path('app/private/' . $configuration->key_path);
         putenv("GOOGLE_APPLICATION_CREDENTIALS={$credentialsPath}");

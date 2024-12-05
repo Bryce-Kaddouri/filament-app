@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Verification;
 class Configuration extends Model
 {
-    protected $fillable = ['key_path'];
+    protected $fillable = ['key_path', 'project_id'];
 
     public static function getConfiguration(): ?self
     {

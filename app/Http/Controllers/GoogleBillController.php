@@ -38,7 +38,7 @@ class GoogleBillController extends Controller
 {
     public function listBillAccount(){
          // Set the path to your service account key
-    $credentialsPath = base_path('google_credential.json');
+    $credentialsPath = storage_path('app/private/google-credential-key/key.json');
 
     // Check if the credentials file exists
     if (!file_exists($credentialsPath)) {

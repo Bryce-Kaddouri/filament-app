@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ConfigurationResource\Pages;
 use App\Filament\Resources\ConfigurationResource\RelationManagers;
 use App\Forms\Components\IconField;
+use App\Http\Controllers\GcloudController;
 use App\Http\Controllers\VerificationController;
 use App\Models\Configuration;
 use BladeUI\Icons\Components\Icon;
@@ -32,7 +33,7 @@ use Filament\Forms\Components\ViewField;
 use Filament\Notifications\Notification;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Textarea;
-
+use Illuminate\Support\Facades\Storage;
 class ConfigurationResource extends Resource
 {
     protected static ?string $model = Configuration::class;
@@ -51,33 +52,23 @@ class ConfigurationResource extends Resource
                         Tabs\Tab::make('Google Credential Key')
                             ->icon('heroicon-o-key')
                             ->schema([
-                                FileUpload::make('key_path')
-                                    ->label('Google Credential Key')
-                                    ->afterStateUpdated(function ($state, Set $set) {
-                                        /** @var TemporaryUploadedFile $tempFile */
-                                        $tempFile = $state;
-                                        $jsonContent = file_get_contents($tempFile->getRealPath(), true);
-                                        $set('json', $jsonContent);
-                                    })
-                                    ->multiple(false)
-                                    ->required()
-                                    ->disk('local')
-                                    ->getUploadedFileNameForStorageUsing(fn () => 'google-credential-key/key.json')
-                                    ->directory('google-credential-key')
-                                    ->preserveFilenames()
-                                    ->acceptedFileTypes(['application/json']),
+                                TextInput::make('project_id')
+                                ->label('Project ID')
+                                ->required(),
+                               
                                 PrettyJson::make('json')
                                     ->afterStateHydrated(function (Set $set, Get $get, string $operation) {
-                                        if (in_array($operation, ['view', 'edit'])) {
-                                            $filePath = array_key_first($get('key_path'));
-                                            if (!$filePath) {
-                                                return;
-                                            }
-                                            $jsonContent = file_get_contents(storage_path('app/private/' . $get('key_path')[$filePath]), true);
-                                            $set('json', $jsonContent);
+                                        // check if key exists in storage/app/private/google-credential-key/key.json
+                                        if (Storage::disk('local')->exists('google-credential-key/key.json')) {
+                                            // dd('exists', Storage::disk('local')->get('google-credential-key/key.json'));
+                                            $jsonString = Storage::disk('local')->get('google-credential-key/key.json');
+                                           // dd($json);
+                                            $set('json', $jsonString);
+                                        }else{
+                                            // dd('not exists');
+                                            $set('json', null);
                                         }
                                     })
-                                    ->hidden(fn (Get $get) => !$get('key_path'))
                             ]),
                             Tabs\Tab::make('Permissions Verification')
                                 
@@ -143,6 +134,29 @@ class ConfigurationResource extends Resource
                                     ])
                                     ])
                                     ]),
+                                    Tabs\Tab::make('Create Service Account')
+                                
+                                ->icon('heroicon-o-check-circle')
+                                ->schema([
+                                    Section::make('Create Service Account')
+                                    ->schema([
+                                        TextInput::make('display_name')
+                                        ->helperText('The name of the service account to create. must be unique and must be formated like this: my-account-number-1')
+                                        ->label('Service Account Name')
+                                    ])
+                                    ->footerActions([
+                                        Action::make('createServiceAccount')
+                                            ->icon('heroicon-o-check-circle')
+                                            ->requiresConfirmation()
+                                            ->action(function (Get $get) {
+                                                $gcloudController = new GcloudController();
+                                                $serviceAccount = $gcloudController->setupAllRolesServiceAccount($get('display_name'));
+                                                
+                                                
+                                               
+                                            })
+                                    ])
+                                ]),
                                     Tabs\Tab::make('List Processors')
                                 
                                 ->hidden(fn ($operation) => $operation !== 'view')

@@ -1,0 +1,1588 @@
+{
+  "name": "projects/41599727341/services/documentai.googleapis.com",
+  "config": {
+    "name": "documentai.googleapis.com",
+    "title": "Cloud Document AI API",
+    "apis": [
+      {
+        "name": "google.cloud.documentai.uiv1beta3.DocumentLabelingService",
+        "methods": [
+          {
+            "name": "CreateDataLabelingJob"
+          },
+          {
+            "name": "ListDataLabelingJobs"
+          },
+          {
+            "name": "CancelDataLabelingJob"
+          }
+        ],
+        "version": "v1"
+      },
+      {
+        "name": "google.longrunning.Operations",
+        "methods": [
+          {
+            "name": "ListOperations"
+          },
+          {
+            "name": "GetOperation"
+          },
+          {
+            "name": "DeleteOperation"
+          },
+          {
+            "name": "CancelOperation"
+          },
+          {
+            "name": "WaitOperation"
+          }
+        ],
+        "version": "v1"
+      },
+      {
+        "name": "google.cloud.documentai.uiv1beta3.DocumentProcessorService",
+        "methods": [
+          {
+            "name": "ProcessDocument"
+          },
+          {
+            "name": "FetchProcessorTypes"
+          },
+          {
+            "name": "ListProcessorTypes"
+          },
+          {
+            "name": "GetProcessorType"
+          },
+          {
+            "name": "ListProcessors"
+          },
+          {
+            "name": "GetProcessor"
+          },
+          {
+            "name": "TrainProcessorVersion"
+          },
+          {
+            "name": "GetProcessorVersion"
+          },
+          {
+            "name": "ListProcessorVersions"
+          },
+          {
+            "name": "DeleteProcessorVersion"
+          },
+          {
+            "name": "DeployProcessorVersion"
+          },
+          {
+            "name": "UndeployProcessorVersion"
+          },
+          {
+            "name": "CreateProcessor"
+          },
+          {
+            "name": "DeleteProcessor"
+          },
+          {
+            "name": "EnableProcessor"
+          },
+          {
+            "name": "DisableProcessor"
+          },
+          {
+            "name": "SetDefaultProcessorVersion"
+          },
+          {
+            "name": "CreateLabelerPool"
+          },
+          {
+            "name": "ListLabelerPools"
+          },
+          {
+            "name": "GetLabelerPool"
+          },
+          {
+            "name": "DeleteLabelerPool"
+          },
+          {
+            "name": "GetHumanReviewConfig"
+          },
+          {
+            "name": "UpdateHumanReviewConfig"
+          },
+          {
+            "name": "QueryAnalytics"
+          },
+          {
+            "name": "FetchHumanReviewDetails"
+          },
+          {
+            "name": "EvaluateProcessorVersion"
+          },
+          {
+            "name": "GetEvaluation"
+          },
+          {
+            "name": "ListEvaluations"
+          },
+          {
+            "name": "SearchEvaluationDocuments"
+          },
+          {
+            "name": "GetEvaluationDocument"
+          },
+          {
+            "name": "ExportProcessorVersion"
+          },
+          {
+            "name": "ImportProcessorVersion"
+          }
+        ],
+        "version": "v1"
+      },
+      {
+        "name": "google.cloud.documentai.uiv1beta3.DocumentService",
+        "methods": [
+          {
+            "name": "GetDataset"
+          },
+          {
+            "name": "UpdateDataset"
+          },
+          {
+            "name": "ImportDocuments"
+          },
+          {
+            "name": "GetDocument"
+          },
+          {
+            "name": "UpdateDocument"
+          },
+          {
+            "name": "GetThumbnails"
+          },
+          {
+            "name": "ListDocuments"
+          },
+          {
+            "name": "GetAllDatasetSplitStats"
+          },
+          {
+            "name": "BatchUpdateDocuments"
+          },
+          {
+            "name": "BatchMoveDocuments"
+          },
+          {
+            "name": "BatchDeleteDocuments"
+          },
+          {
+            "name": "GetDatasetSchema"
+          },
+          {
+            "name": "UpdateDatasetSchema"
+          },
+          {
+            "name": "ResyncDataset"
+          },
+          {
+            "name": "ExportDocuments"
+          },
+          {
+            "name": "AutoLabelDocuments"
+          },
+          {
+            "name": "SampleDocuments"
+          }
+        ],
+        "version": "v1"
+      },
+      {
+        "name": "google.cloud.documentai.uiv1beta3.DocumentStorageService",
+        "methods": [
+          {
+            "name": "CreateDocumentStorage"
+          },
+          {
+            "name": "RewriteDocumentStorageBase"
+          },
+          {
+            "name": "GetDocumentStorageView"
+          },
+          {
+            "name": "AddDocumentStorageView"
+          },
+          {
+            "name": "ListRevisions"
+          },
+          {
+            "name": "UpdateThumbnails"
+          }
+        ],
+        "version": "v1"
+      },
+      {
+        "name": "google.cloud.documentai.v1.DocumentProcessorService",
+        "methods": [
+          {
+            "name": "ProcessDocument"
+          },
+          {
+            "name": "BatchProcessDocuments"
+          },
+          {
+            "name": "FetchProcessorTypes"
+          },
+          {
+            "name": "ListProcessorTypes"
+          },
+          {
+            "name": "GetProcessorType"
+          },
+          {
+            "name": "ListProcessors"
+          },
+          {
+            "name": "GetProcessor"
+          },
+          {
+            "name": "TrainProcessorVersion"
+          },
+          {
+            "name": "GetProcessorVersion"
+          },
+          {
+            "name": "ListProcessorVersions"
+          },
+          {
+            "name": "DeleteProcessorVersion"
+          },
+          {
+            "name": "DeployProcessorVersion"
+          },
+          {
+            "name": "UndeployProcessorVersion"
+          },
+          {
+            "name": "CreateProcessor"
+          },
+          {
+            "name": "DeleteProcessor"
+          },
+          {
+            "name": "EnableProcessor"
+          },
+          {
+            "name": "DisableProcessor"
+          },
+          {
+            "name": "SetDefaultProcessorVersion"
+          },
+          {
+            "name": "ReviewDocument"
+          },
+          {
+            "name": "EvaluateProcessorVersion"
+          },
+          {
+            "name": "GetEvaluation"
+          },
+          {
+            "name": "ListEvaluations"
+          }
+        ],
+        "version": "v1"
+      },
+      {
+        "name": "google.cloud.documentai.v1beta3.DocumentProcessorService",
+        "methods": [
+          {
+            "name": "ProcessDocument"
+          },
+          {
+            "name": "BatchProcessDocuments"
+          },
+          {
+            "name": "FetchProcessorTypes"
+          },
+          {
+            "name": "ListProcessorTypes"
+          },
+          {
+            "name": "GetProcessorType"
+          },
+          {
+            "name": "ListProcessors"
+          },
+          {
+            "name": "GetProcessor"
+          },
+          {
+            "name": "TrainProcessorVersion"
+          },
+          {
+            "name": "GetProcessorVersion"
+          },
+          {
+            "name": "ListProcessorVersions"
+          },
+          {
+            "name": "DeleteProcessorVersion"
+          },
+          {
+            "name": "DeployProcessorVersion"
+          },
+          {
+            "name": "UndeployProcessorVersion"
+          },
+          {
+            "name": "CreateProcessor"
+          },
+          {
+            "name": "DeleteProcessor"
+          },
+          {
+            "name": "EnableProcessor"
+          },
+          {
+            "name": "DisableProcessor"
+          },
+          {
+            "name": "SetDefaultProcessorVersion"
+          },
+          {
+            "name": "ReviewDocument"
+          },
+          {
+            "name": "EvaluateProcessorVersion"
+          },
+          {
+            "name": "GetEvaluation"
+          },
+          {
+            "name": "ListEvaluations"
+          },
+          {
+            "name": "ImportProcessorVersion"
+          }
+        ],
+        "version": "v1beta3"
+      },
+      {
+        "name": "google.cloud.documentai.v1beta3.DocumentService",
+        "methods": [
+          {
+            "name": "UpdateDataset"
+          },
+          {
+            "name": "ImportDocuments"
+          },
+          {
+            "name": "GetDocument"
+          },
+          {
+            "name": "ListDocuments"
+          },
+          {
+            "name": "BatchDeleteDocuments"
+          },
+          {
+            "name": "GetDatasetSchema"
+          },
+          {
+            "name": "UpdateDatasetSchema"
+          }
+        ],
+        "version": "v1beta3"
+      },
+      {
+        "name": "google.cloud.location.Locations",
+        "methods": [
+          {
+            "name": "ListLocations"
+          },
+          {
+            "name": "GetLocation"
+          }
+        ],
+        "version": "v1"
+      },
+      {
+        "name": "google.discovery.Discovery",
+        "methods": [
+          {
+            "name": "GetDiscovery"
+          },
+          {
+            "name": "GetDiscoveryRest"
+          }
+        ],
+        "version": "v1"
+      }
+    ],
+    "documentation": {
+      "summary": "Service to parse structured information from unstructured or semi-structured documents using state-of-the-art Google AI such as natural language, computer vision, translation, and AutoML."
+    },
+    "quota": {
+      "limits": [
+        {
+          "name": "DefaultRequestsPerMinutePerProject",
+          "metric": "documentai.googleapis.com/default_requests",
+          "unit": "1/min/{project}",
+          "values": {
+            "DEFAULT": "1800"
+          }
+        },
+        {
+          "name": "DefaultRequestsPerMinutePerUser",
+          "metric": "documentai.googleapis.com/default_requests",
+          "unit": "1/min/{project}/{user}",
+          "values": {
+            "DEFAULT": "1800"
+          }
+        },
+        {
+          "name": "OnlineProcessDocumentRequestsPerMinutePerProject",
+          "metric": "documentai.googleapis.com/online_process_document_requests",
+          "unit": "1/min/{project}",
+          "values": {
+            "DEFAULT": "600"
+          }
+        },
+        {
+          "name": "PagesInProcessingPerProject",
+          "metric": "documentai.googleapis.com/pages_in_processing_requests",
+          "unit": "1/{project}",
+          "values": {
+            "DEFAULT": "10000"
+          }
+        },
+        {
+          "name": "ConcurrentBatchProcessDocumentRequestsPerProject",
+          "metric": "documentai.googleapis.com/concurrent_batch_process_document_requests",
+          "unit": "1/{project}",
+          "values": {
+            "DEFAULT": "10"
+          }
+        },
+        {
+          "name": "ProcessorReviewDocumentRequestsPerMinutePerProject",
+          "metric": "documentai.googleapis.com/processor_review_document_requests",
+          "unit": "1/min/{project}",
+          "values": {
+            "DEFAULT": "600"
+          }
+        },
+        {
+          "name": "ProcessorOnlineRequestsPerMinutePerProjectUS",
+          "metric": "documentai.googleapis.com/processor_online_process_document_requests_us",
+          "unit": "1/min/{project}/{processor_type}",
+          "values": {
+            "DEFAULT": "120"
+          }
+        },
+        {
+          "name": "ProcessorOnlineRequestsPerMinutePerProjectEU",
+          "metric": "documentai.googleapis.com/processor_online_process_document_requests_eu",
+          "unit": "1/min/{project}/{processor_type}",
+          "values": {
+            "DEFAULT": "120"
+          }
+        },
+        {
+          "name": "ProcessorOnlineRequestsPerMinutePerProjectPerRegion",
+          "metric": "documentai.googleapis.com/processor_online_process_document_requests_regional",
+          "unit": "1/min/{project}/{region}/{processor_type}",
+          "values": {
+            "DEFAULT/asia-southeast1": "100",
+            "DEFAULT/europe-west3": "100",
+            "DEFAULT/asia-south1": "100",
+            "DEFAULT/europe-west2": "100",
+            "DEFAULT/northamerica-northeast1": "100",
+            "DEFAULT/australia-southeast1": "100",
+            "DEFAULT": "0"
+          }
+        },
+        {
+          "name": "ProcessorConcurrentBatchProcessDocumentRequestsPerProjectUS",
+          "metric": "documentai.googleapis.com/processor_concurrent_batch_process_document_requests_us",
+          "unit": "1/{project}",
+          "values": {
+            "DEFAULT": "5"
+          }
+        },
+        {
+          "name": "ProcessorConcurrentBatchProcessDocumentRequestsPerProjectEU",
+          "metric": "documentai.googleapis.com/processor_concurrent_batch_process_document_requests_eu",
+          "unit": "1/{project}",
+          "values": {
+            "DEFAULT": "5"
+          }
+        },
+        {
+          "name": "ProcessorConcurrentBatchProcessDocumentPerProjectPerRegion",
+          "metric": "documentai.googleapis.com/processor_concurrent_batch_process_document_requests_regional",
+          "unit": "1/{project}/{region}",
+          "values": {
+            "DEFAULT": "5"
+          }
+        },
+        {
+          "name": "ConcurrentTrainProcessorVersionRequestsPerProjectUS",
+          "metric": "documentai.googleapis.com/concurrent_train_processor_version_requests_us",
+          "unit": "1/{project}",
+          "values": {
+            "DEFAULT": "1"
+          }
+        },
+        {
+          "name": "ConcurrentTrainProcessorVersionRequestsPerProjectEU",
+          "metric": "documentai.googleapis.com/concurrent_train_processor_version_requests_eu",
+          "unit": "1/{project}",
+          "values": {
+            "DEFAULT": "1"
+          }
+        },
+        {
+          "name": "ConcurrentTrainProcessorVersionRequestsPerProjectPerRegion",
+          "metric": "documentai.googleapis.com/concurrent_train_processor_version_single_region_requests",
+          "unit": "1/{project}/{region}",
+          "values": {
+            "DEFAULT/asia-southeast1": "1",
+            "DEFAULT/asia-south1": "1",
+            "DEFAULT/europe-west3": "1",
+            "DEFAULT/europe-west2": "1",
+            "DEFAULT/northamerica-northeast1": "1",
+            "DEFAULT/australia-southeast1": "0",
+            "DEFAULT": "0"
+          }
+        },
+        {
+          "name": "DeployedCustomProcessorVersionsUS",
+          "metric": "documentai.googleapis.com/deployed_custom_processor_versions_us",
+          "unit": "1/{project}",
+          "values": {
+            "DEFAULT": "5"
+          }
+        },
+        {
+          "name": "DeployedCustomProcessorVersionsEU",
+          "metric": "documentai.googleapis.com/deployed_custom_processor_versions_eu",
+          "unit": "1/{project}",
+          "values": {
+            "DEFAULT": "5"
+          }
+        },
+        {
+          "name": "DeployedCustomProcessorVersionsRegional",
+          "metric": "documentai.googleapis.com/deployed_custom_processor_versions_regional",
+          "unit": "1/{project}/{region}",
+          "values": {
+            "DEFAULT": "5"
+          }
+        },
+        {
+          "name": "DeployedGenerativeProcessorVersionsUS",
+          "metric": "documentai.googleapis.com/deployed_generative_processor_versions_us",
+          "unit": "1/{project}/{processor_type}",
+          "values": {
+            "DEFAULT/{processor_type=SUMMARY_PROCESSOR}": "20",
+            "DEFAULT": "0",
+            "DEFAULT/{processor_type=CUSTOM_EXTRACTION_PROCESSOR}": "100"
+          }
+        },
+        {
+          "name": "DeployedGenerativeProcessorVersionsEU",
+          "metric": "documentai.googleapis.com/deployed_generative_processor_versions_eu",
+          "unit": "1/{project}/{processor_type}",
+          "values": {
+            "DEFAULT": "0",
+            "DEFAULT/{processor_type=CUSTOM_EXTRACTION_PROCESSOR}": "100"
+          }
+        },
+        {
+          "name": "DeployedGenerativeProcessorVersionsRegional",
+          "metric": "documentai.googleapis.com/deployed_generative_processor_versions_regional",
+          "unit": "1/{project}/{region}/{processor_type}",
+          "values": {
+            "DEFAULT/northamerica-northeast1/{processor_type=CUSTOM_EXTRACTION_PROCESSOR}": "100",
+            "DEFAULT/asia-southeast1": "0",
+            "DEFAULT/northamerica-northeast1": "0",
+            "DEFAULT": "0",
+            "DEFAULT/asia-southeast1/{processor_type=CUSTOM_EXTRACTION_PROCESSOR}": "100"
+          }
+        },
+        {
+          "name": "ConcurrentImportDocumentsRequestsPerProjectUS",
+          "metric": "documentai.googleapis.com/concurrent_import_documents_requests_us",
+          "unit": "1/{project}",
+          "values": {
+            "DEFAULT": "3"
+          }
+        },
+        {
+          "name": "ConcurrentImportDocumentsRequestsPerProjectEU",
+          "metric": "documentai.googleapis.com/concurrent_import_documents_requests_eu",
+          "unit": "1/{project}",
+          "values": {
+            "DEFAULT": "3"
+          }
+        },
+        {
+          "name": "ConcurrentImportDocumentsRequestsPerProjectPerRegion",
+          "metric": "documentai.googleapis.com/concurrent_import_documents_requests_regional",
+          "unit": "1/{project}/{region}",
+          "values": {
+            "DEFAULT": "3"
+          }
+        },
+        {
+          "name": "ConcurrentExportDocumentsRequestsPerProjectUS",
+          "metric": "documentai.googleapis.com/concurrent_export_documents_requests_us",
+          "unit": "1/{project}",
+          "values": {
+            "DEFAULT": "1"
+          }
+        },
+        {
+          "name": "ConcurrentExportDocumentsRequestsPerProjectEU",
+          "metric": "documentai.googleapis.com/concurrent_export_documents_requests_eu",
+          "unit": "1/{project}",
+          "values": {
+            "DEFAULT": "1"
+          }
+        },
+        {
+          "name": "ConcurrentExportDocumentsRequestsPerProjectPerRegion",
+          "metric": "documentai.googleapis.com/concurrent_export_documents_requests_regional",
+          "unit": "1/{project}/{region}",
+          "values": {
+            "DEFAULT": "1"
+          }
+        },
+        {
+          "name": "ConcurrentDocumentLabelingJobsPerProjectUS",
+          "metric": "documentai.googleapis.com/concurrent_document_labeling_jobs_us",
+          "unit": "1/{project}",
+          "values": {
+            "DEFAULT": "10"
+          }
+        },
+        {
+          "name": "ConcurrentDocumentLabelingJobsPerProjectEU",
+          "metric": "documentai.googleapis.com/concurrent_document_labeling_jobs_eu",
+          "unit": "1/{project}",
+          "values": {
+            "DEFAULT": "10"
+          }
+        },
+        {
+          "name": "ConcurrentDocumentLabelingJobsPerProjectPerRegion",
+          "metric": "documentai.googleapis.com/concurrent_document_labeling_jobs_regional",
+          "unit": "1/{project}/{region}",
+          "values": {
+            "DEFAULT": "10"
+          }
+        }
+      ]
+    },
+    "authentication": {
+      "rules": [
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        },
+        {
+          "oauth": {
+            "canonicalScopes": "https://www.googleapis.com/auth/cloud-platform"
+          }
+        }
+      ]
+    },
+    "usage": {
+      "requirements": [
+        "serviceusage.googleapis.com/tos/cloud"
+      ]
+    },
+    "endpoints": [
+      {
+        "name": "preprod-documentai.googleapis.com"
+      },
+      {
+        "name": "preprod-documentai.clients6.google.com"
+      },
+      {
+        "name": "content-preprod-documentai.googleapis.com"
+      },
+      {
+        "name": "eu-preprod-documentai.googleapis.com"
+      },
+      {
+        "name": "eu-preprod-documentai.clients6.google.com"
+      },
+      {
+        "name": "content-eu-preprod-documentai.googleapis.com"
+      },
+      {
+        "name": "documentai.googleapis.com"
+      },
+      {
+        "name": "documentai.clients6.google.com"
+      },
+      {
+        "name": "content-documentai.googleapis.com"
+      },
+      {
+        "name": "us-documentai.googleapis.com"
+      },
+      {
+        "name": "us-documentai.clients6.google.com"
+      },
+      {
+        "name": "content-us-documentai.googleapis.com"
+      },
+      {
+        "name": "eu-documentai.googleapis.com"
+      },
+      {
+        "name": "eu-documentai.clients6.google.com"
+      },
+      {
+        "name": "content-eu-documentai.googleapis.com"
+      },
+      {
+        "name": "europe-west2-documentai.googleapis.com"
+      },
+      {
+        "name": "europe-west2-documentai.clients6.google.com"
+      },
+      {
+        "name": "content-europe-west2-documentai.googleapis.com"
+      },
+      {
+        "name": "europe-west3-documentai.googleapis.com"
+      },
+      {
+        "name": "europe-west3-documentai.clients6.google.com"
+      },
+      {
+        "name": "content-europe-west3-documentai.googleapis.com"
+      },
+      {
+        "name": "asia-south1-documentai.googleapis.com"
+      },
+      {
+        "name": "asia-south1-documentai.clients6.google.com"
+      },
+      {
+        "name": "content-asia-south1-documentai.googleapis.com"
+      },
+      {
+        "name": "asia-southeast1-documentai.googleapis.com"
+      },
+      {
+        "name": "asia-southeast1-documentai.clients6.google.com"
+      },
+      {
+        "name": "content-asia-southeast1-documentai.googleapis.com"
+      },
+      {
+        "name": "australia-southeast1-documentai.googleapis.com"
+      },
+      {
+        "name": "australia-southeast1-documentai.clients6.google.com"
+      },
+      {
+        "name": "content-australia-southeast1-documentai.googleapis.com"
+      },
+      {
+        "name": "northamerica-northeast1-documentai.googleapis.com"
+      },
+      {
+        "name": "northamerica-northeast1-documentai.clients6.google.com"
+      },
+      {
+        "name": "content-northamerica-northeast1-documentai.googleapis.com"
+      },
+      {
+        "name": "preprod-documentai.mtls.googleapis.com"
+      },
+      {
+        "name": "preprod-documentai.mtls.clients6.google.com"
+      },
+      {
+        "name": "content-preprod-documentai.mtls.googleapis.com"
+      },
+      {
+        "name": "eu-preprod-documentai.mtls.googleapis.com"
+      },
+      {
+        "name": "eu-preprod-documentai.mtls.clients6.google.com"
+      },
+      {
+        "name": "content-eu-preprod-documentai.mtls.googleapis.com"
+      },
+      {
+        "name": "documentai.mtls.googleapis.com"
+      },
+      {
+        "name": "documentai.mtls.clients6.google.com"
+      },
+      {
+        "name": "content-documentai.mtls.googleapis.com"
+      },
+      {
+        "name": "us-documentai.mtls.googleapis.com"
+      },
+      {
+        "name": "us-documentai.mtls.clients6.google.com"
+      },
+      {
+        "name": "content-us-documentai.mtls.googleapis.com"
+      },
+      {
+        "name": "eu-documentai.mtls.googleapis.com"
+      },
+      {
+        "name": "eu-documentai.mtls.clients6.google.com"
+      },
+      {
+        "name": "content-eu-documentai.mtls.googleapis.com"
+      },
+      {
+        "name": "europe-west2-documentai.mtls.googleapis.com"
+      },
+      {
+        "name": "europe-west2-documentai.mtls.clients6.google.com"
+      },
+      {
+        "name": "content-europe-west2-documentai.mtls.googleapis.com"
+      },
+      {
+        "name": "europe-west3-documentai.mtls.googleapis.com"
+      },
+      {
+        "name": "europe-west3-documentai.mtls.clients6.google.com"
+      },
+      {
+        "name": "content-europe-west3-documentai.mtls.googleapis.com"
+      },
+      {
+        "name": "asia-south1-documentai.mtls.googleapis.com"
+      },
+      {
+        "name": "asia-south1-documentai.mtls.clients6.google.com"
+      },
+      {
+        "name": "content-asia-south1-documentai.mtls.googleapis.com"
+      },
+      {
+        "name": "asia-southeast1-documentai.mtls.googleapis.com"
+      },
+      {
+        "name": "asia-southeast1-documentai.mtls.clients6.google.com"
+      },
+      {
+        "name": "content-asia-southeast1-documentai.mtls.googleapis.com"
+      },
+      {
+        "name": "australia-southeast1-documentai.mtls.googleapis.com"
+      },
+      {
+        "name": "australia-southeast1-documentai.mtls.clients6.google.com"
+      },
+      {
+        "name": "content-australia-southeast1-documentai.mtls.googleapis.com"
+      },
+      {
+        "name": "northamerica-northeast1-documentai.mtls.googleapis.com"
+      },
+      {
+        "name": "northamerica-northeast1-documentai.mtls.clients6.google.com"
+      },
+      {
+        "name": "content-northamerica-northeast1-documentai.mtls.googleapis.com"
+      }
+    ],
+    "monitoredResources": [
+      {
+        "type": "documentai.googleapis.com/Location",
+        "displayName": "Document AI Location",
+        "description": "A location in the Document AI API.",
+        "labels": [
+          {
+            "key": "resource_container",
+            "description": "The identified of the GCP resource container associated with this resource, such as \"my_project\" or \"organizations/5678\"."
+          },
+          {
+            "key": "location",
+            "description": "Location of resource."
+          }
+        ],
+        "launchStage": "ALPHA"
+      },
+      {
+        "type": "documentai.googleapis.com/ProcessorVersion",
+        "displayName": "Document AI Processor Version",
+        "description": "A specific version of a Document AI processor.",
+        "labels": [
+          {
+            "key": "resource_container",
+            "description": "The identifier of the GCP project associated with this resource, such as 'my-project'."
+          },
+          {
+            "key": "location",
+            "description": "The physical location of the instance."
+          },
+          {
+            "key": "processor_version_id",
+            "description": "The processor version id of the DocumentAi processor that reports the metric."
+          },
+          {
+            "key": "processor_type",
+            "description": "The processor type of the DocumentAi processor that reports the metric. ."
+          },
+          {
+            "key": "processor_id",
+            "description": "The processor id of the DocumentAi processor that reports the metric."
+          }
+        ],
+        "launchStage": "EARLY_ACCESS"
+      }
+    ],
+    "monitoring": {
+      "consumerDestinations": [
+        {
+          "monitoredResource": "documentai.googleapis.com/Location",
+          "metrics": [
+            "documentai.googleapis.com/deployed_generative_processor_versions_eu",
+            "documentai.googleapis.com/deployed_generative_processor_versions_regional",
+            "documentai.googleapis.com/deployed_generative_processor_versions_us",
+            "documentai.googleapis.com/processor_online_process_document_requests_eu",
+            "documentai.googleapis.com/processor_online_process_document_requests_regional",
+            "documentai.googleapis.com/processor_online_process_document_requests_us",
+            "documentai.googleapis.com/quota/deployed_generative_processor_versions_eu/exceeded",
+            "documentai.googleapis.com/quota/deployed_generative_processor_versions_regional/exceeded",
+            "documentai.googleapis.com/quota/deployed_generative_processor_versions_us/exceeded",
+            "documentai.googleapis.com/quota/processor_online_process_document_requests_eu/exceeded",
+            "documentai.googleapis.com/quota/processor_online_process_document_requests_eu/usage",
+            "documentai.googleapis.com/quota/processor_online_process_document_requests_regional/exceeded",
+            "documentai.googleapis.com/quota/processor_online_process_document_requests_regional/usage",
+            "documentai.googleapis.com/quota/processor_online_process_document_requests_us/exceeded",
+            "documentai.googleapis.com/quota/processor_online_process_document_requests_us/usage"
+          ]
+        },
+        {
+          "monitoredResource": "documentai.googleapis.com/ProcessorVersion",
+          "metrics": [
+            "documentai.googleapis.com/processed_document_count",
+            "documentai.googleapis.com/processed_page_count",
+            "documentai.googleapis.com/document_processing_latencies",
+            "documentai.googleapis.com/predicted_entity_count",
+            "documentai.googleapis.com/entity_confidence_score",
+            "documentai.googleapis.com/human_review_corrected_entity_count"
+          ]
+        },
+        {
+          "monitoredResource": "documentai.googleapis.com/Location",
+          "metrics": [
+            "documentai.googleapis.com/quota/deployed_generative_processor_versions_eu/limit",
+            "documentai.googleapis.com/quota/deployed_generative_processor_versions_eu/usage",
+            "documentai.googleapis.com/quota/deployed_generative_processor_versions_regional/limit",
+            "documentai.googleapis.com/quota/deployed_generative_processor_versions_regional/usage",
+            "documentai.googleapis.com/quota/deployed_generative_processor_versions_us/limit",
+            "documentai.googleapis.com/quota/deployed_generative_processor_versions_us/usage",
+            "documentai.googleapis.com/quota/processor_online_process_document_requests_eu/limit",
+            "documentai.googleapis.com/quota/processor_online_process_document_requests_regional/limit",
+            "documentai.googleapis.com/quota/processor_online_process_document_requests_us/limit"
+          ]
+        }
+      ]
+    }
+  },
+  "state": "ENABLED",
+  "parent": "projects/41599727341"
+}

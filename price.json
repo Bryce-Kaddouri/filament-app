@@ -1,0 +1,54 @@
+{
+  "skus": [
+    {
+      "name": "services/A18B-E573-B019/skus/B695-48F0-0D9D",
+      "skuId": "B695-48F0-0D9D",
+      "description": "General Pages Processed",
+      "category": {
+        "serviceDisplayName": "Cloud Document API",
+        "resourceFamily": "ApplicationServices",
+        "resourceGroup": "GeneralDocument",
+        "usageType": "OnDemand"
+      },
+      "serviceRegions": [
+        "global"
+      ],
+      "pricingInfo": [
+        {
+          "summary": "",
+          "pricingExpression": {
+            "usageUnit": "count",
+            "displayQuantity": 1000,
+            "tieredRates": [
+              {
+                "startUsageAmount": 0,
+                "unitPrice": {
+                  "currencyCode": "USD",
+                  "units": "0",
+                  "nanos": 90000000
+                }
+              }
+            ],
+            "usageUnitDescription": "count",
+            "baseUnit": "count",
+            "baseUnitDescription": "count",
+            "baseUnitConversionFactor": 1
+          },
+          "aggregationInfo": {
+            "aggregationLevel": "ACCOUNT",
+            "aggregationInterval": "MONTHLY",
+            "aggregationCount": 1
+          },
+          "currencyConversionRate": 1,
+          "effectiveTime": "2024-12-05T12:52:20.750565Z"
+        }
+      ],
+      "serviceProviderName": "Google",
+      "geoTaxonomy": {
+        "type": "GLOBAL",
+        "regions": []
+      }
+    }
+  ],
+  "nextPageToken": ""
+}
