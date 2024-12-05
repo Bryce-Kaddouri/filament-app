@@ -4,8 +4,10 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ConfigurationResource\Pages;
 use App\Filament\Resources\ConfigurationResource\RelationManagers;
+use App\Forms\Components\IconField;
 use App\Http\Controllers\VerificationController;
 use App\Models\Configuration;
+use BladeUI\Icons\Components\Icon;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\FileUpload;
@@ -23,8 +25,13 @@ use Filament\Resources\Pages\ViewRecord;
 use Novadaemon\FilamentPrettyJson\PrettyJson;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Filament\Forms\Components\Tabs;
+use Filament\Forms\Components\TagsInput;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\ViewField;
 use Filament\Notifications\Notification;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Textarea;
 
 class ConfigurationResource extends Resource
 {
@@ -115,15 +122,46 @@ class ConfigurationResource extends Resource
                                     ])
                                     ->schema([
                                         Repeater::make('verifications')
+                                        ->columns(7)
                                         ->orderColumn('id')
-                                        
-
                                     ->relationship('verifications')
                                     ->schema([
-                                        Toggle::make('is_success')
+                                        IconField::make('is_success')
+                                        ->label('Status')
+                                        ->columnSpan(1),
+                                        DateTimePicker::make('created_at')
+                                        ->label('Date and Time')
+                                        ->columnSpan(2), 
+                                        Textarea::make('reason')
+                                        ->label('Reason')
+                                        ->columnSpan(4),
+                                        
+
+
+                                            
+                                    
                                     ])
                                     ])
-                            ])
+                                    ]),
+                                    Tabs\Tab::make('List Processors')
+                                
+                                ->hidden(fn ($operation) => $operation !== 'view')
+                                ->icon('heroicon-o-check-circle')
+                                ->schema([
+                                    Section::make('List Processors')
+                                    ->headerActions([
+                                        Action::make('listProcessors')
+                                            ->icon('heroicon-o-check-circle')
+                                            ->action(function ($record) {
+                                                $verifyController = new VerificationController();
+                                                $verifyController->listProcessors();
+                                            })
+                                    ])
+                                    ->schema([
+                                        TextInput::make('project_id')
+                                        ->label('Project ID')
+                                    ])
+                                ])
                             
                     ])
                     ->persistTabInQueryString()

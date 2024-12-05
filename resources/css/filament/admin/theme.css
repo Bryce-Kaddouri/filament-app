@@ -13,3 +13,15 @@
 .red-square-border {
     @apply border-red-500 !important;
 }
+
+.badge {
+    @apply w-10 h-10 !important;
+}
+
+.badge-success {
+    @apply bg-green-500 !important;
+}
+
+.badge-error {
+    @apply bg-red-500 !important;
+}
