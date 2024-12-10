@@ -11,6 +11,7 @@ use Symfony\Component\Process\Process;
 class GcloudController extends Controller
 {
     protected $projectId;
+    protected array $roles = ['roles/documentai.apiuser', 'roles/documentai.admin'];
     public function __construct()
     {
        $configuration = Configuration::first();
@@ -108,6 +109,36 @@ class GcloudController extends Controller
         return $result;
     }
 
+    // check if service account has role
+    public function checkRoleServiceAccount(string $serviceAccountEmail, string $projectId)
+    {
+        $process = new Process([
+            'gcloud', 
+            'projects', 
+            'get-iam-policy', 
+            $projectId, 
+            '--flatten=bindings[].members', 
+            '--filter=bindings.members:serviceAccount:' . $serviceAccountEmail, 
+            '--format=json'
+        ]);
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+
+        $result = $process->getOutput();
+        
+        $json = json_decode($result, true);
+        $roles = [];
+        foreach ($json as $role) {
+            $roles[] = $role['bindings']['role'];
+        }
+        
+        // return $roles;
+        return in_array($role, $roles);
+    }
+
     public function createKeyServiceAccount(string $serviceAccountEmail, string $projectId)
     {
         $oldKeyPath = storage_path('app/private/google-credential-key/key.json');
@@ -140,5 +171,41 @@ class GcloudController extends Controller
         $serviceAccount = $this->getServiceAccount($serviceAccountEmail, $this->projectId);
         
         return $serviceAccount;
+    }
+
+    // function to check id document ai is enable
+    public function checkDocumentAiIsEnable()
+    {
+        $process = new Process(['gcloud', 'services', 'list', '--enabled', '--format=json', '--filter=documentai.googleapis.com']);
+        $process->run();
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        $json = json_decode($process->getOutput(), true);
+        $isEnable = count($json) > 0;
+        return $isEnable;
+    }
+
+    // function to enable document ai
+    public function enableDocumentAi()
+    {
+        $process = new Process(['gcloud', 'services', 'enable', 'documentai.googleapis.com']);
+        $process->run();
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        return $process->getOutput();
+    }
+
+    // list document ai
+    public function listDocumentAi()
+    {
+        $process = new Process(['gcloud', 'documentai', 'documents', 'list']);
+        $process->run();
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        
+        return $process->getOutput();
     }
 }
