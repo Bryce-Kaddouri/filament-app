@@ -1,0 +1,79 @@
+NAME                                         TITLE
+addressvalidation.googleapis.com             Address Validation API
+aiplatform.googleapis.com                    Vertex AI API
+analyticshub.googleapis.com                  Analytics Hub API
+androidpublisher.googleapis.com              Google Play Android Developer API
+appengine.googleapis.com                     App Engine Admin API
+appenginereporting.googleapis.com            App Engine
+artifactregistry.googleapis.com              Artifact Registry API
+bigquery.googleapis.com                      BigQuery API
+bigqueryconnection.googleapis.com            BigQuery Connection API
+bigquerydatapolicy.googleapis.com            BigQuery Data Policy API
+bigquerymigration.googleapis.com             BigQuery Migration API
+bigqueryreservation.googleapis.com           BigQuery Reservation API
+bigquerystorage.googleapis.com               BigQuery Storage API
+billingbudgets.googleapis.com                Cloud Billing Budget API
+cloudapis.googleapis.com                     Google Cloud APIs
+cloudbilling.googleapis.com                  Cloud Billing API
+cloudbuild.googleapis.com                    Cloud Build API
+cloudfunctions.googleapis.com                Cloud Functions API
+cloudresourcemanager.googleapis.com          Cloud Resource Manager API
+cloudtrace.googleapis.com                    Cloud Trace API
+containeranalysis.googleapis.com             Container Analysis API
+containerregistry.googleapis.com             Container Registry API
+containerscanning.googleapis.com             Container Scanning API
+dataform.googleapis.com                      Dataform API
+dataplex.googleapis.com                      Cloud Dataplex API
+datastore.googleapis.com                     Cloud Datastore API
+developerconnect.googleapis.com              Developer Connect API
+directions-backend.googleapis.com            Directions API
+documentai.googleapis.com                    Cloud Document AI API
+eventarc.googleapis.com                      Eventarc API
+fcm.googleapis.com                           Firebase Cloud Messaging API
+fcmregistrations.googleapis.com              FCM Registration API
+firebase.googleapis.com                      Firebase Management API
+firebaseappdistribution.googleapis.com       Firebase App Distribution API
+firebaseapphosting.googleapis.com            Firebase App Hosting API
+firebasedynamiclinks.googleapis.com          Firebase Dynamic Links API
+firebasehosting.googleapis.com               Firebase Hosting API
+firebaseinstallations.googleapis.com         Firebase Installations API
+firebaseml.googleapis.com                    Firebase ML API
+firebaseremoteconfig.googleapis.com          Firebase Remote Config API
+firebaseremoteconfigrealtime.googleapis.com  Firebase Remote Config Realtime API
+firebaserules.googleapis.com                 Firebase Rules API
+firebasestorage.googleapis.com               Cloud Storage for Firebase API
+geocoding-backend.googleapis.com             Geocoding API
+gmail.googleapis.com                         Gmail API
+iam.googleapis.com                           Identity and Access Management (IAM) API
+iamcredentials.googleapis.com                IAM Service Account Credentials API
+identitytoolkit.googleapis.com               Identity Toolkit API
+logging.googleapis.com                       Cloud Logging API
+maps-android-backend.googleapis.com          Maps SDK for Android
+maps-backend.googleapis.com                  Maps JavaScript API
+maps-embed-backend.googleapis.com            Maps Embed API
+maps-ios-backend.googleapis.com              Maps SDK for iOS
+mlkit.googleapis.com                         ML Kit API
+mobilecrashreporting.googleapis.com          Mobile Crash Reporting API
+monitoring.googleapis.com                    Cloud Monitoring API
+orgpolicy.googleapis.com                     Organization Policy API
+places-backend.googleapis.com                Places API
+places.googleapis.com                        Places API (New)
+policytroubleshooter.googleapis.com          Policy Troubleshooter API
+privilegedaccessmanager.googleapis.com       Privileged Access Manager API
+pubsub.googleapis.com                        Cloud Pub/Sub API
+run.googleapis.com                           Cloud Run Admin API
+runtimeconfig.googleapis.com                 Cloud Runtime Configuration API
+secretmanager.googleapis.com                 Secret Manager API
+securetoken.googleapis.com                   Token Service API
+servicemanagement.googleapis.com             Service Management API
+serviceusage.googleapis.com                  Service Usage API
+source.googleapis.com                        Legacy Cloud Source Repositories API
+sql-component.googleapis.com                 Cloud SQL
+static-maps-backend.googleapis.com           Maps Static API
+storage-api.googleapis.com                   Google Cloud Storage JSON API
+storage-component.googleapis.com             Cloud Storage
+storage.googleapis.com                       Cloud Storage API
+testing.googleapis.com                       Cloud Testing API
+vision.googleapis.com                        Cloud Vision API
+visionai.googleapis.com                      Vision AI API
+youtube.googleapis.com                       YouTube Data API v3

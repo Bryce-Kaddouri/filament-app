@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ConfigurationResource\Pages;
 use App\Filament\Resources\ConfigurationResource\RelationManagers;
 use App\Forms\Components\IconField;
+use App\Forms\Components\LogViewer;
 use App\Http\Controllers\GcloudController;
 use App\Http\Controllers\VerificationController;
 use App\Models\Configuration;
@@ -147,15 +148,16 @@ class ConfigurationResource extends Resource
                                     ->footerActions([
                                         Action::make('createServiceAccount')
                                             ->icon('heroicon-o-check-circle')
-                                            ->requiresConfirmation()
+                                            //->requiresConfirmation()
                                             ->action(function (Get $get) {
                                                 $gcloudController = new GcloudController();
-                                                $serviceAccount = $gcloudController->setupAllRolesServiceAccount($get('display_name'));
+                                                $serviceAccount = $gcloudController->createServiceAccount($get('display_name'), $get('project_id'));
+                                            }),
+                                            
+                                        ]),
+                                    LogViewer::make('log_viewer')
+                                                ->label('Log Viewer')
                                                 
-                                                
-                                               
-                                            })
-                                    ])
                                 ]),
                                     Tabs\Tab::make('List Processors')
                                 
@@ -180,6 +182,8 @@ class ConfigurationResource extends Resource
                     ])
                     ->persistTabInQueryString()
             ])
+
+            
             ->columns(1);
     }
 

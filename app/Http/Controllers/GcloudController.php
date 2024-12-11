@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\LogUpdated;
 use App\Models\Configuration;
 use App\Models\Verification;
 use Exception;
@@ -13,6 +14,9 @@ use Symfony\Component\Process\Process;
 class GcloudController extends Controller
 {
     protected $projectId;
+    protected $roleTitle = 'Document AI User For Bill App';
+    protected $roleName = 'billAppRole';
+    
     protected array $roles = ['roles/documentai.apiuser', 'roles/documentai.admin'];
     public function __construct()
     {
@@ -55,54 +59,109 @@ class GcloudController extends Controller
     public function createServiceAccount(string $name, string $projectId)
     {
         // parse name to this format Test Create 3 --> test-create-3
+        $this->selectProject($projectId);
+
+
+        // check if role project already exists
+        $roleProjectExists = $this->RoleProjectAlreadyExists($projectId);
+        // dd($roleProjectExists);
+        if(!$roleProjectExists){
+            $this->createRoleProject($projectId);
+        }
+
+        
 
         // create txt file in the log folder
         $logPath = storage_path('app/private/log/1.txt');
+        // check if file exists
+        if (!file_exists($logPath)) {
+            // create file
+            Storage::disk('local')->put('log/1.txt', '');
+            
+        }
         $logFile = fopen($logPath, 'w');
-        fwrite($logFile, 'Creating service account ' . $name . ' in project ' . $projectId);
+        fwrite($logFile, 'Creating service account ' . $name . ' in project ' . $projectId . PHP_EOL);
+        fclose($logFile);
+
+
+        // write some text in the file
+        $logFile = fopen($logPath, 'a');
+        fwrite($logFile, 'Creating service account ' . $name . ' in project ' . $projectId  . PHP_EOL);
         fclose($logFile);
        
-        $process = new Process(['gcloud', 'iam', 'service-accounts', 'create', $name, '--project=' . $projectId]);
+        $command = ['gcloud', 'iam', 'service-accounts', 'create', $name, '--project=' . $projectId];
+         $process = new Process($command);
+         $commandLine = implode(' ', $command);
+         
+         // format to one line 
+        
         $process->run();
-        $output = $process->getOutput();
+        
+        // dd($output);
         $logFile = fopen($logPath, 'a');
-        fwrite($logFile, $output);
+        fwrite($logFile, $commandLine . PHP_EOL);
+
+        if (!$process->isSuccessful()) {
+            // dd($process->getErrorOutput());
+
+            
+            // write error in the file
+            $logFile = fopen($logPath, 'a');
+            fwrite($logFile, $process->getErrorOutput() . PHP_EOL);
+            fclose($logFile);
+            return false;
+        }
+        $output = $process->getOutput();
+        fwrite($logFile, $output . PHP_EOL);
         fclose($logFile);
-
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
-        }
         $serviceAccountEmail = $name . '@' . $projectId . '.iam.gserviceaccount.com';
-        $this->createKeyServiceAccount($serviceAccountEmail, $projectId);
+        $canCreateKey = $this->createKeyServiceAccount($serviceAccountEmail, $projectId);
+        if(!$canCreateKey){
+            return false;
+        }
+        $canAddRoles = $this->addRolesServiceAccount($serviceAccountEmail, $projectId, $this->roles);
+        if(!$canAddRoles){
+            return false;
+        }
+        
 
-        return $name;
+        return true; 
     }
 
-    public function addRoleServiceAccount(string $serviceAccountEmail, string $projectId, string $role, )
+    public function addRolesServiceAccount(string $serviceAccountEmail, string $projectId, array $roles)
     {
-        $process = new Process(['gcloud', 'projects', 'add-iam-policy-binding', $projectId, '--member=serviceAccount:' . $serviceAccountEmail, '--role=' . $role, '--condition=None']);
+        $logPath = storage_path('app/private/log/1.txt');
+        foreach($roles as $role){   
+            $logFile = fopen($logPath, 'a');
+            fwrite($logFile, 'Adding role ' . $role . ' to service account ' . $serviceAccountEmail . ' in project ' . $projectId . PHP_EOL);
+            fclose($logFile);
+            $command = ['gcloud', 'projects', 'add-iam-policy-binding', $projectId, '--member=serviceAccount:' . $serviceAccountEmail, '--role=' . $role];
+            $process = new Process($command);
+            $commandLine = implode(' ', $command);
+            $logFile = fopen($logPath, 'a');
+            fwrite($logFile, $commandLine . PHP_EOL);
+            fclose($logFile);
+            $process->run();
+        
 
-        $process->run();
+            if (!$process->isSuccessful()) {
+                // Log the specific error message
+                $logFile = fopen($logPath, 'a');
+                fwrite($logFile, 'Error adding role: ' . $process->getErrorOutput() . PHP_EOL);
+                fclose($logFile);
+                return false;
+            }
+            $logFile = fopen($logPath, 'a');
+            fwrite($logFile, $process->getOutput() . PHP_EOL);
+            fclose($logFile);
 
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
+            
         }
-
-        return $process->getOutput();
+        $logFile = fopen($logPath, 'a');
+        fwrite($logFile, 'All roles added successfully' . PHP_EOL);
+        fclose($logFile);
+        return true;
     }
-
-   /*  public function getServiceAccount(string $serviceAccountEmail, string $projectId)
-    {
-        $process = new Process(['gcloud', 'iam', 'service-accounts', 'describe', $serviceAccountEmail, '--project=' . $projectId, '--condition=None']);
-        $process->run();
-
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
-        }
-
-        $result = $process->getOutput();
-        return $result;
-    } */
 
     // check if service account has role
     public function listRoleServiceAccount(string $serviceAccountEmail, string $projectId)
@@ -133,22 +192,63 @@ class GcloudController extends Controller
         return $roles;
     }
 
+    protected function listProjects()
+    {
+        $process = new Process(['gcloud', 'projects', 'list']);
+        $process->run();
+        return $process->getOutput();
+    }
+
+    protected function selectProject(string $projectId)
+    {   $logPath = storage_path('app/private/log/1.txt');
+        $logFile = fopen($logPath, 'a');
+        fwrite($logFile, 'Selecting project ' . $projectId . PHP_EOL);
+        fclose($logFile);
+        $command = ['gcloud', 'config', 'set', 'project', $projectId];
+        $commandLine = implode(' ', $command);
+        $logFile = fopen($logPath, 'a');
+        fwrite($logFile, $commandLine . PHP_EOL);
+        fclose($logFile);
+        $process = new Process($command);
+        $process->run();
+        if (!$process->isSuccessful()) {
+            $logFile = fopen($logPath, 'a');
+            fwrite($logFile, $process->getErrorOutput() . PHP_EOL);
+            fclose($logFile);
+            return false;
+        }
+        $logFile = fopen($logPath, 'a');
+        fwrite($logFile, $process->getOutput() . PHP_EOL);
+        fclose($logFile);
+        return true;
+    }
+
     public function createKeyServiceAccount(string $serviceAccountEmail, string $projectId)
     {
+        
         $oldKeyPath = storage_path('app/private/google-credential-key/key.json');
-        $logPath = storage_path('app/private/log/2.txt');
-        $logFile = fopen($logPath, 'w');
-        fwrite($logFile, 'Creating key for service account ' . $serviceAccountEmail . ' in project ' . $projectId);
+        $logPath = storage_path('app/private/log/1.txt');
+        $logFile = fopen($logPath, 'a');
+        fwrite($logFile, 'Creating key for service account ' . $serviceAccountEmail . ' in project ' . $projectId . PHP_EOL);
         fclose($logFile);
         $path = storage_path('app/private/google-credential-key/new.json');
-        $process = new Process(['gcloud', 'iam', 'service-accounts', 'keys', 'create', $path, '--iam-account=' . $serviceAccountEmail, '--project=' . $projectId]);
+        
+        $command = ['gcloud', 'iam', 'service-accounts', 'keys', 'create', $path, '--iam-account=' . $serviceAccountEmail, '--project=' . $projectId];
+        $process = new Process($command);
+        $commandLine = implode(' ', $command);
         $process->run();
         $output = $process->getOutput();
         $logFile = fopen($logPath, 'a');
-        fwrite($logFile, $output);
+        fwrite($logFile, $commandLine . PHP_EOL);
+        fwrite($logFile, $output . PHP_EOL);
         fclose($logFile);
         if(!$process->isSuccessful()){
-            throw new ProcessFailedException($process);
+            /* $error =  new ProcessFailedException($process); */
+            // dd($process->getErrorOutput(), 'error from create key');
+            $logFile = fopen($logPath, 'a');
+            fwrite($logFile, $process->getErrorOutput() . PHP_EOL);
+            fclose($logFile);
+            return false;
         }
        
             // remove old key in storage/app/private/google-credential-key/google-credential-key/key.json
@@ -164,21 +264,7 @@ class GcloudController extends Controller
         
     }
 
-    public function setupAllRolesServiceAccount(string $displayName )
-    {
-        try{
-            $name = $this->createServiceAccount($displayName, $this->projectId);
-            $serviceAccountEmail = $name . '@' . $this->projectId . '.iam.gserviceaccount.com';
-            $this->addRoleServiceAccount($serviceAccountEmail, $this->projectId, 'roles/documentai.apiuser');
-            $this->addRoleServiceAccount($serviceAccountEmail, $this->projectId, 'roles/documentai.admin');
-            return true;
-        }catch(Exception $e){
-            dd($e);
-            return false;
-        }
-        
-        
-    }
+    
 
     // function to check id document ai is enable
     public function checkDocumentAiIsEnable()
@@ -282,5 +368,101 @@ class GcloudController extends Controller
         
 
     }
-}
 
+
+    protected function listRolesProject(string $projectId)
+    {
+        $logPath = storage_path('app/private/log/1.txt');
+        $logFile = fopen($logPath, 'a');
+        fwrite($logFile, 'Listing roles in project ' . $projectId . PHP_EOL);
+        fclose($logFile);
+        $command = ['gcloud', 'iam', 'roles', 'list', '--project=' . $projectId, '--format=json'];
+        $process = new Process($command);
+        $commandLine = implode(' ', $command);
+        $logFile = fopen($logPath, 'a');
+        fwrite($logFile, $commandLine . PHP_EOL);
+        fclose($logFile);
+        $process->run();
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        $logFile = fopen($logPath, 'a');
+        fwrite($logFile, $process->getOutput() . PHP_EOL);
+        fclose($logFile);
+        return $process->getOutput();
+    }
+
+    protected function roleProjectAlreadyExists(string $projectId)
+    {
+        $json = $this->listRolesProject($projectId);
+        //dd($json);
+        $json = json_decode($json, true);
+        foreach($json as $role){
+            if($role['name'] == 'projects/'.$projectId.'/roles/'.$this->roleName){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected function createRoleProject(string $projectId)
+    {
+        $logPath = storage_path('app/private/log/1.txt');
+        $logFile = fopen($logPath, 'a');
+        fwrite($logFile, 'Creating role project ' . $this->roleTitle . ' in project ' . $projectId . PHP_EOL);
+        fclose($logFile);
+        $permissions = [
+            'documentai.locations.get',
+            'documentai.locations.list', 
+            'documentai.operations.getLegacy', 
+            'documentai.processorTypes.get', 
+            'documentai.processorTypes.list',
+            'documentai.processors.create',
+            'documentai.processors.delete',
+            'documentai.processors.get',
+            'documentai.processors.list',
+            'documentai.processors.processBatch',
+            'documentai.processors.processOnline',
+            'documentai.processors.update',
+            'documentai.processorVersions.create',
+            'documentai.processorVersions.delete',
+            'documentai.processorVersions.get',
+            'documentai.processorVersions.list',
+            'documentai.processorVersions.processBatch',
+            'documentai.processorVersions.processOnline',
+            'documentai.processorVersions.update',
+            'documentai.evaluations.create',
+            'documentai.evaluations.get',
+            'documentai.evaluations.list'
+        ];
+        $command = [
+            'gcloud', 
+            'iam', 
+            'roles', 
+            'create', 
+            $this->roleName, 
+            '--project=' . $projectId, 
+            '--title="' . $this->roleTitle . '"', 
+            '--description="Role for Bill App"', 
+            '--permissions="' . implode(',', $permissions) . '"', 
+            '--stage="GA"'
+        ];
+        $process = new Process($command);
+        $commandLine = implode(' ', $command);
+        // dd($commandLine);
+        $logFile = fopen($logPath, 'a');
+        fwrite($logFile, $commandLine . PHP_EOL);
+        fclose($logFile);
+        $process->run();
+        if (!$process->isSuccessful()) {
+            $logFile = fopen($logPath, 'a');
+            fwrite($logFile, $process->getErrorOutput() . PHP_EOL);
+            fclose($logFile);
+            return false;
+        }
+        $logFile = fopen($logPath, 'a');
+        fwrite($logFile, $process->getOutput() . PHP_EOL);
+        fclose($logFile);
+        return true;
+    }
+}
