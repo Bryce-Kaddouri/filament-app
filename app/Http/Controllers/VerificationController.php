@@ -81,62 +81,8 @@ class VerificationController extends Controller
     public function listProcessors(){
 
         try{
-            // setup env for credentials
-            $configuration = Configuration::first();
-            $credentialsPath = storage_path('app/private/' . $configuration->key_path);
-            putenv("GOOGLE_APPLICATION_CREDENTIALS={$credentialsPath}");
-            $json = json_decode(file_get_contents($credentialsPath), true);
-
-            $projectId = $json['project_id'];
-            $serviceAccountEmail = $json['client_email'];
-
-            $gcloudController = new GcloudController();
-            $output = $gcloudController->listRolesServiceAccount($serviceAccountEmail, $projectId);
-            $roles = json_decode($output, true);
-            $requiredRoles = ['roles/documentai.apiUser'];
-            $arrayRoles = array_map(function($role) {
-                return $role['bindings']['role'];
-            }, $roles);
-            // save into json 
-            dd($arrayRoles);
-        }catch(\Exception $e){
-            dd($e);
-        }
-        $configuration = Configuration::first();
-        $credentialsPath = storage_path('app/private/' . $configuration->key_path);
-        putenv("GOOGLE_APPLICATION_CREDENTIALS={$credentialsPath}");
-        
-       
-        
-        $json = json_decode(file_get_contents($credentialsPath), true);
-        $projectId = $json['project_id'];
-        $this->create_policy_sample('policies/cloudresourcemanager.googleapis.com%2Fprojects%2F' . $projectId . '/denypolicies/my-deny-policy');
-        $location = 'us';
-
-        //$this->troubleshoot_iam_policy_sample();
-        // $this->listPolicies('policies/cloudresourcemanager.googleapis.com%2Fprojects%2F' . $projectId . '/denypolicies');
-
-        $this->check_onboarding_status_sample('projects/' . $projectId . '/locations/' . $location);
-        $client = new DocumentProcessorServiceClient();
-       
-        $formattedParent = 'projects/' . $projectId . '/locations/' . $location;
-        // dd($formattedParent);
-        $request = (new ListProcessorsRequest())
-        ->setParent($formattedParent);
-        
-
-        try {
-            /** @var PagedListResponse $response */
-            $response = $client->listProcessors($request);
-    
-            /** @var Processor $element */
-            foreach ($response as $element) {
-                dd($element);
-                printf('Element data: %s' . PHP_EOL, $element->serializeToJsonString());
-            }
-        } catch (ApiException $ex) {
+        }catch(ApiException $ex){
             dd($ex);
-            printf('Call failed with message: %s' . PHP_EOL, $ex->getMessage());
         }
     }
 

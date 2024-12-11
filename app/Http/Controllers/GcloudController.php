@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Configuration;
+use App\Models\Verification;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -48,31 +50,24 @@ class GcloudController extends Controller
     }
 
     // list roles of the service account
-    public function listRolesServiceAccount(string $serviceAccountEmail)
-    {
-
-        /* gcloud projects get-iam-policy test-extract-text-ia \
-        --flatten="bindings[].members" \
-        --format='table(bindings.role)' \
-        --filter="bindings.members:bill-account@test-extract-text-ia.iam.gserviceaccount.com" */
-        // dd($serviceAccountEmail, $projectId);
-        $process = new Process(['gcloud', 'projects', 'get-iam-policy', $this->projectId, '--flatten=bindings[].members', '--format=json', '--filter=bindings.members:' . $serviceAccountEmail]);
-        // display command 
-        $process->run();
-
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
-        }
-
-        return $process->getOutput();
-    }
+    
 
     public function createServiceAccount(string $name, string $projectId)
     {
         // parse name to this format Test Create 3 --> test-create-3
+
+        // create txt file in the log folder
+        $logPath = storage_path('app/private/log/1.txt');
+        $logFile = fopen($logPath, 'w');
+        fwrite($logFile, 'Creating service account ' . $name . ' in project ' . $projectId);
+        fclose($logFile);
        
         $process = new Process(['gcloud', 'iam', 'service-accounts', 'create', $name, '--project=' . $projectId]);
         $process->run();
+        $output = $process->getOutput();
+        $logFile = fopen($logPath, 'a');
+        fwrite($logFile, $output);
+        fclose($logFile);
 
         if (!$process->isSuccessful()) {
             throw new ProcessFailedException($process);
@@ -85,7 +80,7 @@ class GcloudController extends Controller
 
     public function addRoleServiceAccount(string $serviceAccountEmail, string $projectId, string $role, )
     {
-        $process = new Process(['gcloud', 'projects', 'add-iam-policy-binding', $projectId, '--member=serviceAccount:' . $serviceAccountEmail, '--role=' . $role, ]);
+        $process = new Process(['gcloud', 'projects', 'add-iam-policy-binding', $projectId, '--member=serviceAccount:' . $serviceAccountEmail, '--role=' . $role, '--condition=None']);
 
         $process->run();
 
@@ -96,7 +91,7 @@ class GcloudController extends Controller
         return $process->getOutput();
     }
 
-    public function getServiceAccount(string $serviceAccountEmail, string $projectId)
+   /*  public function getServiceAccount(string $serviceAccountEmail, string $projectId)
     {
         $process = new Process(['gcloud', 'iam', 'service-accounts', 'describe', $serviceAccountEmail, '--project=' . $projectId, '--condition=None']);
         $process->run();
@@ -107,10 +102,10 @@ class GcloudController extends Controller
 
         $result = $process->getOutput();
         return $result;
-    }
+    } */
 
     // check if service account has role
-    public function checkRoleServiceAccount(string $serviceAccountEmail, string $projectId)
+    public function listRoleServiceAccount(string $serviceAccountEmail, string $projectId)
     {
         $process = new Process([
             'gcloud', 
@@ -135,16 +130,23 @@ class GcloudController extends Controller
             $roles[] = $role['bindings']['role'];
         }
         
-        // return $roles;
-        return in_array($role, $roles);
+        return $roles;
     }
 
     public function createKeyServiceAccount(string $serviceAccountEmail, string $projectId)
     {
         $oldKeyPath = storage_path('app/private/google-credential-key/key.json');
+        $logPath = storage_path('app/private/log/2.txt');
+        $logFile = fopen($logPath, 'w');
+        fwrite($logFile, 'Creating key for service account ' . $serviceAccountEmail . ' in project ' . $projectId);
+        fclose($logFile);
         $path = storage_path('app/private/google-credential-key/new.json');
         $process = new Process(['gcloud', 'iam', 'service-accounts', 'keys', 'create', $path, '--iam-account=' . $serviceAccountEmail, '--project=' . $projectId]);
         $process->run();
+        $output = $process->getOutput();
+        $logFile = fopen($logPath, 'a');
+        fwrite($logFile, $output);
+        fclose($logFile);
         if(!$process->isSuccessful()){
             throw new ProcessFailedException($process);
         }
@@ -164,13 +166,18 @@ class GcloudController extends Controller
 
     public function setupAllRolesServiceAccount(string $displayName )
     {
-        $name = $this->createServiceAccount($displayName, $this->projectId);
-        $serviceAccountEmail = $name . '@' . $this->projectId . '.iam.gserviceaccount.com';
-        $this->addRoleServiceAccount($serviceAccountEmail, $this->projectId, 'roles/documentai.apiuser');
-        $this->addRoleServiceAccount($serviceAccountEmail, $this->projectId, 'roles/documentai.admin');
-        $serviceAccount = $this->getServiceAccount($serviceAccountEmail, $this->projectId);
+        try{
+            $name = $this->createServiceAccount($displayName, $this->projectId);
+            $serviceAccountEmail = $name . '@' . $this->projectId . '.iam.gserviceaccount.com';
+            $this->addRoleServiceAccount($serviceAccountEmail, $this->projectId, 'roles/documentai.apiuser');
+            $this->addRoleServiceAccount($serviceAccountEmail, $this->projectId, 'roles/documentai.admin');
+            return true;
+        }catch(Exception $e){
+            dd($e);
+            return false;
+        }
         
-        return $serviceAccount;
+        
     }
 
     // function to check id document ai is enable
@@ -208,4 +215,72 @@ class GcloudController extends Controller
         
         return $process->getOutput();
     }
+
+    protected function checkIfFileServiceAccountExists()
+    {
+        $configuration = Configuration::find(1);
+    $credentialsPath = storage_path('app/private/google-credential-key/key.json');
+
+    // Check if the credentials file exists
+        if (!file_exists($credentialsPath)) {
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    protected function getServiceAccount()
+    {
+        $configuration = Configuration::find(1);
+        $credentialsPath = storage_path('app/private/google-credential-key/key.json');
+        $json = json_decode(file_get_contents($credentialsPath), true);
+        return $json;
+    }
+
+    public function verifyServiceAccount(){
+        $serviceAccountExists = $this->checkIfFileServiceAccountExists();
+        if(!$serviceAccountExists){
+            $errorMessage = "Service account file not found";
+            $verif = Verification::create([
+                'is_success' => false,
+                'reason' => $errorMessage,
+                'configuration_id' => 1
+            ]);
+            return $verif;
+        }
+        $documentAiIsEnable = $this->checkDocumentAiIsEnable();
+        if(!$documentAiIsEnable){
+            $errorMessage = "Document ai is not enable";
+            $verif = Verification::create([
+                'is_success' => false,
+                'reason' => $errorMessage,
+                'configuration_id' => 1
+            ]);
+            return $verif;
+        }
+        $serviceAccount = $this->getServiceAccount();
+        $serviceAccountEmail = $serviceAccount['client_email'];
+        $projectId = $serviceAccount['project_id'];
+        $accountHasRole = $this->listRoleServiceAccount($serviceAccountEmail, $projectId);
+        $requiredRoles = $this->roles;
+        $missingRoles = array_diff($requiredRoles, $accountHasRole);
+        if(count($missingRoles) > 0){
+            $errorMessage = "Service account does not have role " . implode(', ', $missingRoles);
+            $verif = Verification::create([
+                'is_success' => false,
+                'reason' => $errorMessage,
+                'configuration_id' => 1
+            ]);
+            return $verif;
+        }
+        $verification = Verification::create([
+            'is_success' => true,
+            'reason' => "Service account is ready",
+            'configuration_id' => 1
+        ]);
+        return $verification;
+        
+
+    }
 }
+

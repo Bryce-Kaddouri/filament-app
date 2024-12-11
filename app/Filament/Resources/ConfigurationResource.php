@@ -87,9 +87,9 @@ class ConfigurationResource extends Resource
                                                         'tab' => '-permissions-verification-tab'
                                                     ]
                                                 );
-                                                $verifyController = new VerificationController();
-                                                $isSuccess = $verifyController->verify();
-                                                if ($isSuccess) {
+                                                $gCloudController = new GcloudController();
+                                                $isSuccess = $gCloudController->verifyServiceAccount();
+                                                if ($isSuccess->is_success) {
                                                     // success notification
                                                     Notification::make()
                                                         ->title('Success')
