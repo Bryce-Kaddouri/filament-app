@@ -88,22 +88,24 @@ class ConfigurationResource extends Resource
                                                     $projectController = new ProjectController();
                                                     $response = $projectController->createProject($data['new_project_id'] );
                                                     $response = json_decode($response, true);
+
                                                     if($response['status'] == 'success'){
                                                         // success notification
                                                         Notification::make()
+                                                            
                                                             ->title('Success')
                                                             ->body('Project created successfully.')
-                                                            
                                                             ->success()
                                                             ->send();
                                                     }else{
+ 
+                                                        
                                                         // error notification
                                                         Notification::make()
-                                                        
                                                             ->title('Error')
                                                             ->body($response['result'])
                                                             ->danger()
-                                                            ->send();
+                                                            ->send(); 
                                                             // avoid closing the modal
                                                             $action->halt();
                                                     }
@@ -122,6 +124,37 @@ class ConfigurationResource extends Resource
                                                     ->required(),
                                                    ]
                                                 )
+                                                ->action(function (array $data, Get $get, Action $action) {
+                                                    if(!$get('project_id')){
+                                                        Notification::make()
+                                                            ->title('Error')
+                                                            ->body('Project ID is required.')
+                                                            ->danger()
+                                                            ->send(); 
+                                                            // avoid closing the modal
+                                                            $action->halt();
+                                                    }
+                                                    $projectController = new ProjectController();
+                                                    $response = $projectController->createServiceAccount($get('project_id'), $data['display_name']);
+                                                    $response = json_decode($response, true);
+                                                    if($response['status'] == 'success'){
+                                                        // success notification
+                                                        Notification::make()
+                                                            ->title('Success')
+                                                            ->body('Service account created successfully.')
+                                                            ->success()
+                                                            ->send();
+                                                    }else{
+                                                        // error notification
+                                                        Notification::make()
+                                                            ->title('Error')
+                                                            ->body($response['result'])
+                                                            ->danger()
+                                                            ->send(); 
+                                                            // avoid closing the modal
+                                                            $action->halt();
+                                                    }
+                                                })
                                         )
                                         ->reactive()
                                         ->live()
@@ -163,6 +196,7 @@ class ConfigurationResource extends Resource
                                         ->searchable()
                                         ->native(false)
                                         ->preload()
+                                        ->required()
                                         ->options(function ($get) {
                                             $projectId = $get('project_id');
                                             $projectController = new ProjectController();
@@ -171,9 +205,21 @@ class ConfigurationResource extends Resource
                                             return collect($billingAccounts)->pluck('name', 'billingAccountId');
                                         })
                                     ]),
-                                Wizard\Step::make('Billing')
+                                Wizard\Step::make('Processor')
                                     ->schema([
-                                        // ...
+                                        Select::make('processor_id')
+                                        ->label('Processor ID')
+                                        ->searchable()
+                                        ->native(false)
+                                        ->preload()
+                                        ->required()
+                                        ->options(function ($get) {
+                                            $projectId = $get('project_id');
+                                            $projectController = new ProjectController();
+                                            $processors = $projectController->listProcessors($projectId);
+                                            $processors = json_decode($processors, true);
+                                            return collect($processors)->pluck('name', 'processorId');
+                                        })
                                     ]),
                             ])->persistStepInQueryString()
                         ]),

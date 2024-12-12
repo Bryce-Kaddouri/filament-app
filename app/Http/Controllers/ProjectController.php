@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Configuration;
 use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Override;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
@@ -82,7 +83,49 @@ class ProjectController extends Controller
         
         return json_encode(["status" => "success", "message" => "Project created successfully", "result" => $process->getOutput()]);
     }
-    // query builder
+
+    // create service account for project
+    public function createServiceAccount(string $projectId, string $serviceAccountId)
+    {
+        $command = ['gcloud', 'iam', 'service-accounts', 'create', $serviceAccountId, '--project=' . $projectId];
+        $process = new Process($command);
+        $process->run();
+        if (!$process->isSuccessful()) {
+            return json_encode(["status" => "error", "message" => "Service account creation failed", "result" => $process->getOutput()]);
+        }
+        return json_encode(["status" => "success", "message" => "Service account created successfully", "result" => $process->getOutput()]);
+    }
+
+    // list processors of a project
+    public function listProcessors(string $projectId)
+    {
+        // use this ap req:
+        /* curl -X GET \
+  -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
+  "https://eu-documentai.googleapis.com/v1beta3/projects/test-extract-text-ia/locations/eu/processors" */
+        
+
+        $accessToken = '';
+        dd($accessToken);
+        $request = new Request();
+        $request->headers->set('Authorization', 'Bearer ' . $accessToken);
+        $response = Http::get('https://eu-documentai.googleapis.com/v1beta3/projects/test-extract-text-ia/locations/eu/processors');
+        return $response->json();
+    }
+
+    // create docuemnt ai invoice parser processor
+    public function createDocumentAiInvoiceParserProcessor(string $projectId, string $processorId)
+    {
+        $command = ['gcloud', 'documentai', 'processors', 'create', $processorId, '--project=' . $projectId];
+        $commandLine = implode(' ', $command);
+        dd($commandLine);
+        $process = new Process($command);
+        $process->run();
+        if (!$process->isSuccessful()) {
+            return json_encode(["status" => "error", "message" => "Processor creation failed", "result" => $process->getOutput()]);
+        }
+        return json_encode(["status" => "success", "message" => "Processor created successfully", "result" => $process->getOutput()]);
+    }
     
 
 
