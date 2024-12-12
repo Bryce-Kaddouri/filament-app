@@ -232,7 +232,7 @@ class GcloudController extends Controller
         fwrite($logFile, 'Creating key for service account ' . $serviceAccountEmail . ' in project ' . $projectId . PHP_EOL);
         fclose($logFile);
         $path = storage_path('app/private/google-credential-key/new.json');
-        
+
         $command = ['gcloud', 'iam', 'service-accounts', 'keys', 'create', $path, '--iam-account=' . $serviceAccountEmail, '--project=' . $projectId];
         $process = new Process($command);
         $commandLine = implode(' ', $command);
@@ -465,4 +465,6 @@ class GcloudController extends Controller
         fclose($logFile);
         return true;
     }
+
+    
 }

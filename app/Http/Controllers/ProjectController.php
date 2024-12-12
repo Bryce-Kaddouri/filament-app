@@ -45,6 +45,43 @@ class ProjectController extends Controller
         return $projectsModel;
     }
 
+    // function to list services accounts of a project
+    public function listServicesAccounts(string $projectId)
+    {
+        $process = new Process(['gcloud', 'iam', 'service-accounts', 'list', '--format=json', '--project=' . $projectId]);
+        $process->run();
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        return $process->getOutput();
+    }
+
+    // list billing accounts of a project
+    public function listBillingAccounts(string $projectId)
+    {
+        $process = new Process(['gcloud', 'billing', 'accounts', 'list', '--format=json', '--project=' . $projectId]);
+        $process->run();
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        return $process->getOutput();
+    }
+
+    // function to create a project
+    public function createProject(string $projectId)
+    {   
+        
+        $command = ['gcloud', 'projects', 'create', $projectId];
+        
+        $process = new Process($command);
+        $process->run();
+        if (!$process->isSuccessful()) {
+            $error = new ProcessFailedException($process);
+            return json_encode(["status" => "error", "message" => "Project creation failed", "result" => $error->getMessage()]);
+        }
+        
+        return json_encode(["status" => "success", "message" => "Project created successfully", "result" => $process->getOutput()]);
+    }
     // query builder
     
 
