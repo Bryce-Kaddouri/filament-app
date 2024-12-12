@@ -23,7 +23,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('bills', function (Blueprint $table) {
-            $table->dropColumn('file_urls');
             $table->string('file_url')->nullable();
         });
     }

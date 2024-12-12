@@ -28,7 +28,11 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
 use Joaopaulolndev\FilamentEditProfile\Pages\EditProfilePage;
-
+use DutchCodingCompany\FilamentSocialite\FilamentSocialitePlugin;
+use DutchCodingCompany\FilamentSocialite\Provider;
+use Filament\Support\Colors;
+use Laravel\Socialite\Contracts\User as SocialiteUserContract;
+use Illuminate\Contracts\Auth\Authenticatable;
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -38,6 +42,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('/')
             ->login()
+            ->registration()
             ->emailVerification()
             ->passwordReset()
             ->viteTheme('resources/css/filament/admin/theme.css')
@@ -97,7 +102,30 @@ class AdminPanelProvider extends PanelProvider
                 ->customProfileComponents([
                     \App\Livewire\CustomProfileComponent::class,
                 ]),
-                FilamentUserActivityPlugin::make()
+                FilamentUserActivityPlugin::make(),
+                FilamentSocialitePlugin::make()
+                // (required) Add providers corresponding with providers in `config/services.php`.
+                ->providers([
+                    // Create a provider 'gitlab' corresponding to the Socialite driver with the same name.
+                    Provider::make('google')
+                        ->label('Google')
+                        ->icon('fab-google')
+                        ->color(Color::hex('#2f2a6b'))
+                        ->outlined(false)
+                        ->stateless(false)
+                        ->scopes([
+                            'email',
+                            'profile',
+                        ])
+                        ,
+                ])
+               
+                // (optional) Enable/disable registration of new (socialite-) users.
+                ->registration(true)
+                ->domainAllowList(['localhost', '127.0.0.1', 'gmail.com'])
+                // (optional) Enable/disable registration of new (socialite-) users using a callback.
+                // In this example, a login flow can only continue if there exists a user (Authenticatable) already.
+                //->registration(fn (string $provider, SocialiteUserContract $oauthUser, ?Authenticatable $user) => (bool) $user)
 
 
 
