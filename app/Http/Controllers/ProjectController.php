@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Configuration;
 use App\Models\Project;
+use DutchCodingCompany\FilamentSocialite\Models\SocialiteUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Laravel\Socialite\Facades\Socialite;
 use Override;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
@@ -17,6 +19,21 @@ class ProjectController extends Controller
     public function __construct()
     {
         $this->configuration = Configuration::first();
+    }
+
+    
+
+    public function listProjectsApi(){
+        // Socialite::driver('google')->stateless()->redirect();
+        $user = Socialite::driver('google')->stateless()->user();
+         // dd(vars: $user);
+
+        $accessToken ='';
+        dd($accessToken);
+        $request = new Request();
+        $request->headers->set('Authorization', 'Bearer ' . $accessToken);
+        $response = Http::get('https://cloudresourcemanager.googleapis.com/v1/projects');
+        return $response->json();
     }
 
     public function listProjects()

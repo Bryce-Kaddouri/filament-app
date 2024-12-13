@@ -12,6 +12,7 @@ use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages;
 use App\Filament\Pages\Auth\EditProfile;
+use App\Models\User;
 use Edwink\FilamentUserActivity\FilamentUserActivityPlugin;
 use Filament\Navigation\MenuItem;
 use Filament\Panel;
@@ -104,25 +105,70 @@ class AdminPanelProvider extends PanelProvider
                 ]),
                 FilamentUserActivityPlugin::make(),
                 FilamentSocialitePlugin::make()
+                
                 // (required) Add providers corresponding with providers in `config/services.php`.
                 ->providers([
                     // Create a provider 'gitlab' corresponding to the Socialite driver with the same name.
                     Provider::make('google')
+                    ->with([
+        'access_type' => 'offline', // Requests a refresh token
+        'prompt' => 'consent',     // Ensures consent screen is shown
+    ])
+                
+                
+                        ->stateless()
+
                         ->label('Google')
                         ->icon('fab-google')
-                        ->color(Color::hex('#2f2a6b'))
-                        ->outlined(false)
-                        ->stateless(false)
+                        ->color(Color::hex('#DB4437'))
+                        ->outlined(true)
+                        ->stateless(true)
                         ->scopes([
-                            'email',
-                            'profile',
+                            'https://www.googleapis.com/auth/cloud-platform',
+        'https://www.googleapis.com/auth/userinfo.email',
+        'https://www.googleapis.com/auth/userinfo.profile',
+        'https://www.googleapis.com/auth/devstorage.full_control',
                         ])
-                        ,
                 ])
+                
+                ->createUserUsing(function (string $provider, SocialiteUserContract $oauthUser, FilamentSocialitePlugin $plugin) {
+                    // create user in database
+                    return  User::create([
+                        'name' => $oauthUser->getName(),
+                        'email' => $oauthUser->getEmail(),
+                        'avatar' => $oauthUser->getAvatar(),
+                        'access_token' => $oauthUser->token,
+                        'refresh_token' => $oauthUser->refreshToken,
+                    ]);
+
+                })
+                ->resolveUserUsing(function (string $provider, SocialiteUserContract $oauthUser, FilamentSocialitePlugin $plugin) {
+                     //dd($oauthUser, 'oauthUser', 'access_token', $oauthUser->token, 'refresh_token', $oauthUser->refreshToken);
+                    // check if user exists in database
+                    $user = User::where('email', $oauthUser->getEmail())->first();
+                    if (!$user) {
+                        $user = User::create([
+                            'name' => $oauthUser->getName(),
+                            'email' => $oauthUser->getEmail(),
+                            'avatar_url' => $oauthUser->getAvatar(),
+                            'access_token' => $oauthUser->token,
+                            'refresh_token' => $oauthUser->refreshToken,
+                        ]);
+                    }else{
+                        $user->update([
+                            'access_token' => $oauthUser->token,
+                            'refresh_token' => $oauthUser->refreshToken,
+                        ]);
+                    }
+                    // dd($user, 'user');
+                    return $user;
+                }) 
+                
                
                 // (optional) Enable/disable registration of new (socialite-) users.
                 ->registration(true)
                 ->domainAllowList(['localhost', '127.0.0.1', 'gmail.com'])
+               
                 // (optional) Enable/disable registration of new (socialite-) users using a callback.
                 // In this example, a login flow can only continue if there exists a user (Authenticatable) already.
                 //->registration(fn (string $provider, SocialiteUserContract $oauthUser, ?Authenticatable $user) => (bool) $user)

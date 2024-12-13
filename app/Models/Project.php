@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Controllers\GoogleCloudController;
 use App\Http\Controllers\ProjectController;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -27,8 +28,8 @@ class Project extends Model
     public function getRows()
     {
         // Fetch data from your external source
-        $projectController = new ProjectController();
-        $projects = $projectController->listProjects();
+        $googleCloudController = new GoogleCloudController();
+        $projects = $googleCloudController->listProjects();
         // dd($projects);
 
         return $projects;

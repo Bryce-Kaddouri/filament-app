@@ -7,7 +7,9 @@ use App\Policies\UserPolicy;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Google\Cloud\Core\ServiceBuilder;
-
+use DutchCodingCompany\FilamentSocialite\Facades\FilamentSocialite as FilamentSocialiteFacade;
+use DutchCodingCompany\FilamentSocialite\FilamentSocialite;
+use Laravel\Socialite\Contracts\User as SocialiteUserContract;
 class AppServiceProvider extends ServiceProvider
 {
 
@@ -38,5 +40,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::policy(User::class, UserPolicy::class);
+       
     }
+
 }

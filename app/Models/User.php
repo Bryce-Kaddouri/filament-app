@@ -30,6 +30,8 @@ class User extends Authenticatable  implements HasAvatar
         'role',
         'avatar_url',
         'custom_fields',
+        'access_token',
+        'refresh_token',
     ];
 
     /**
